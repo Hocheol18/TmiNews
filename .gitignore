@@ -1,0 +1,8 @@
+.idea/
+target/
+bin/
+*.log
+*.class
+.DS_Store
+application.properties
+application.yml
