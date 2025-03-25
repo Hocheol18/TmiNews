@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'common/bottomNavigator.dart';
+
 void main() {
   runApp(MaterialApp(home: MyApp()));
 }
@@ -13,7 +15,7 @@ class MyApp extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Appbar'),),
       body: Text('Main'),
-      bottomNavigationBar: BottomAppBar(),
+      bottomNavigationBar: bottomNavigator(),
     );
   }
 }
