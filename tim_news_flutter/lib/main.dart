@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:tim_news_flutter/screens/loginPage.dart';
+import 'package:tim_news_flutter/screens/mainPage.dart';
 
-import 'common/bottomNavigator.dart';
+import 'news/newsCreatePage.dart';
 
 void main() {
-  runApp(MaterialApp(home: MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Appbar'),),
-      body: Text('Main'),
-      bottomNavigationBar: bottomNavigator(),
+    return MaterialApp(
+      title: '내 앱',
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(),
+        '/main' : (context) => MainPage(),
+        '/create' : (context) => NewsCreatePage(),
+      },
     );
   }
 }
