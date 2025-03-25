@@ -14,7 +14,7 @@ class BottomNavigator extends StatelessWidget {
         style: TabStyle.fixedCircle,
         backgroundColor: Colors.white,
         color: Colors.black,
-        activeColor: Colors.yellow,
+        activeColor: const Color(0xffFFD43A),
         items: [
           TabItem(icon: Icons.create, title: '생성'),
           TabItem(icon: CupertinoIcons.book, title: '보기'),
