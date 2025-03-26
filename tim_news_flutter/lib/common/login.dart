@@ -53,6 +53,7 @@ Future<bool> loginLogic() async {
     final String authCode = await AuthCodeClient.instance.authorize(
       redirectUri: redirectUri,
     );
+    print(token);
     apiPost('http://192.168.0.12:8080/auth/kakao', authCode);
     return true;
   } catch (e) {

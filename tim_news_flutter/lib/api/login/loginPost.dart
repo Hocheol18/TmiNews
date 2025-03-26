@@ -8,12 +8,13 @@ Future<void> apiPost(String site, String code) async {
       'Content-Type': 'application/json',
     },
     body : jsonEncode({
-      'code' : code
+      "code" : code
     })
   );
 
   try {
     final jsonData = jsonDecode(response.body);
+    print(jsonData);
     // 계속 처리
   } catch (e) {
     print("Error parsing JSON: $e");
