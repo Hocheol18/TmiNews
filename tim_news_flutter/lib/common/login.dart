@@ -18,7 +18,8 @@ Future<bool> loginLogic() async {
         redirectUri: redirectUri,
       );
       //TODO :: 로그인 리다이렉트
-      // apiPost('http://localhost:8080/auth/kakao/code', authCode);
+      print(authCode);
+      apiPost('http://192.168.0.12:8080/auth/kakao', authCode);
       return true;
     } catch (error) {
       // ✅ 토큰은 있지만 만료 또는 유효하지 않은 경우
@@ -52,7 +53,7 @@ Future<bool> loginLogic() async {
     final String authCode = await AuthCodeClient.instance.authorize(
       redirectUri: redirectUri,
     );
-    apiPost('http://localhost:8080/auth/kakao/code', authCode);
+    apiPost('http://192.168.0.12:8080/auth/kakao', authCode);
     return true;
   } catch (e) {
     print(e);

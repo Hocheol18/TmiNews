@@ -11,5 +11,12 @@ Future<void> apiPost(String site, String code) async {
       'code' : code
     })
   );
-  print(response);
+
+  try {
+    final jsonData = jsonDecode(response.body);
+    // 계속 처리
+  } catch (e) {
+    print("Error parsing JSON: $e");
+    print("Raw response: ${response.body}");
+  }
 }
