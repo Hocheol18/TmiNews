@@ -5,9 +5,16 @@ import '../screens/mainPage.dart';
 class KakaoLogin extends StatelessWidget {
   const KakaoLogin({super.key});
 
+  loginLogic() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          side: BorderSide(color: Colors.black, width: 1),
+      ),
       onPressed: () {
         Navigator.pushReplacement(
           context,
