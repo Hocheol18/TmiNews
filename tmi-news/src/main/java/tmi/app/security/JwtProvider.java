@@ -7,8 +7,10 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import tmi.app.entity.User;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -16,13 +18,17 @@ public class JwtProvider {
 
     private Key key;
 
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
     private final long ACCESS_TOKEN_EXPIRATION = 1000L * 60 * 60;        // 1시간
     private final long REFRESH_TOKEN_EXPIRATION = 1000L * 60 * 60 * 24 * 7; // 7일
 
     @PostConstruct
     public void init() {
-        // 간단하게 HS256 알고리즘을 위한 key 생성 (실무에서는 key 관리 분리 권장)
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        // Base64 디코딩을 통해 키 생성
+        byte[] secretBytes = Base64.getDecoder().decode(jwtSecret);
+        this.key = Keys.hmacShaKeyFor(secretBytes);
     }
 
     public String createAccessToken(User user) {
