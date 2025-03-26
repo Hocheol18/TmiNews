@@ -10,6 +10,11 @@ textFunction(String txt, double txtSize) {
   );
 }
 
+void main() {
+  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
+
+}
+
 class TitleWidget extends StatelessWidget {
   const TitleWidget({super.key});
 

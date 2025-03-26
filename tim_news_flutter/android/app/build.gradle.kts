@@ -42,3 +42,15 @@ android {
 flutter {
     source = "../.."
 }
+
+
+def kakaoKey = project.hasProperty('KAKAO_NATIVE_APP_KEY') ? project.KAKAO_NATIVE_APP_KEY : ""
+
+android {
+    defaultConfig {
+        resValue "string", "kakao_app_key", "\"${kakaoKey}\""
+        manifestPlaceholders = [
+            KAKAO_NATIVE_REDIRECT_SCHEME: "kakao${kakaoKey}"
+        ]
+    }
+}

@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class NewsMainPage extends StatefulWidget {
   const NewsMainPage({super.key});
@@ -18,11 +20,56 @@ class _NewsMainPageState extends State<NewsMainPage> {
     });
   }
 
+  logoutFunction() async {
+    try {
+      await UserApi.instance.logout();
+    } catch (error) {
+      print('로그아웃 실패, SDK에서 토큰 폐기 $error');
+    }
+  }
+
+  kakaoLogout() async {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder:
+          (BuildContext context) => CupertinoAlertDialog(
+            content: const Text('로그아웃하시겠습니까?'),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () => Navigator.pop(context),
+                child: const Text('아니오'),
+              ),
+              CupertinoDialogAction(
+                isDestructiveAction: true,
+                onPressed: () {
+                  logoutFunction();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: Text('예'),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMI'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              kakaoLogout();
+            },
+            child: Icon(Icons.logout),
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: TopNavigator(

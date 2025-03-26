@@ -6,3 +6,5 @@ bin/
 .DS_Store
 application.properties
 application.yml
+.env
+gradle.properties
