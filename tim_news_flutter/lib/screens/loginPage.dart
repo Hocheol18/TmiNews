@@ -37,7 +37,7 @@ class TitleWidget extends StatelessWidget {
                   textFunction('스포츠', 50),
                 ],
                 repeatForever: true,
-                pause: const Duration(milliseconds: 1500),
+                pause: const Duration(milliseconds: 700),
               ),
             ],
           ),
