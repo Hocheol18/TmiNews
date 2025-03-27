@@ -1,8 +1,18 @@
+# IDE/OS 관련
 .idea/
+.DS_Store
+
+# 빌드 산출물
 target/
 bin/
-*.log
+build/
 *.class
-.DS_Store
+*.log
+
+# 민감 파일
+.env
 application.properties
 application.yml
+
+# Docker 등
+mysql_data/

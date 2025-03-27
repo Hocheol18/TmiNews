@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    ports:
+      - "3307:3306" 
+    volumes:
+      - ${MYSQL_DATA_PATH}:/var/lib/mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: unless-stopped
+
+  ai:
+    build: ./AI
+    container_name: ${AI_CONTAINER_NAME}
+    ports:
+      - "${AI_BINDING_PORT}:8000"
+    env_file:
+      - .env
+    environment:
+      - UPSTAGE_API_TOKEN=${UPSTAGE_API_TOKEN}
+    restart: unless-stopped
+
+  backend:
+    build: ./BE/tmi-news
+    container_name: ${BACKEND_CONTAINER_NAME}
+    ports:
+      - "${SPRING_BINDING_PORT}:8080"
+    depends_on:
+      - ai
+      - mysql
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    restart: always
+
+volumes:
+  mysql_data:
