@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,58 +7,81 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:tim_news_flutter/api/login/loginPost.dart';
 import '../screens/mainPage.dart';
 
-Future<bool> loginLogic() async {
+Future<bool> loginLogic(BuildContext context) async {
   final String redirectUri = "kakao${dotenv.env['NATIVE_APP_KEY']}://oauth";
+  final String serverUri = 'http://192.168.0.16:8080/auth/kakao';
 
-  // 기존 토큰 존재 여부 확인
-  if (await AuthApi.instance.hasToken()) {
+  try {
+    // 토큰이 이미 있는지 확인
+    if (await AuthApi.instance.hasToken()) {
+      try {
+        // 토큰 유효성 확인
+        await UserApi.instance.accessTokenInfo();
+
+        // 토큰 유효하면 인가 코드만 요청
+        final String authCode = await AuthCodeClient.instance.authorize(
+          redirectUri: redirectUri,
+        );
+
+        await apiPost(serverUri, authCode);
+        return true;
+      } catch (error) {
+        // 토큰이 유효하지 않거나 만료된 경우
+        // 아래 로그인 로직으로 계속 진행
+      }
+    }
+
+    // 토큰이 없거나 유효하지 않은 경우 로그인 시도
     try {
-      final AccessTokenInfo tokenInfo =
-          await UserApi.instance.accessTokenInfo();
+      // 카카오톡 앱이 설치되어 있는지 확인
+      if (await isKakaoTalkInstalled()) {
+        try {
+          // 카카오톡으로 로그인 시도
+          await UserApi.instance.loginWithKakaoTalk();
+        } catch (error) {
+          // 사용자가 취소했거나 카카오톡 로그인 실패
+          if (error is PlatformException && error.code == 'CANCELED') {
+            showCupertinoModalPopup<void>(
+              context: context,
+              builder:
+                  (BuildContext context) => CupertinoAlertDialog(
+                    content: const Text('로그인 실패, 다시 시도해주세요'),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        isDestructiveAction: true,
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (Route<dynamic> route) => false,
+                          );
+                        },
+                        child: Text('확인했습니다'),
+                      ),
+                    ],
+                  ),
+            );
+            return false;
+          }
+          // 카카오톡 로그인 실패 → 카카오계정으로 전환
+          await UserApi.instance.loginWithKakaoAccount();
+        }
+      } else {
+        // 카카오톡 설치되지 않은 경우 바로 카카오계정으로 로그인
+        await UserApi.instance.loginWithKakaoAccount();
+      }
+
+      // 로그인 성공 후 인가 코드 요청
       final String authCode = await AuthCodeClient.instance.authorize(
         redirectUri: redirectUri,
       );
-      //TODO :: 로그인 리다이렉트
-      print(authCode);
-      apiPost('http://192.168.0.12:8080/auth/kakao', authCode);
+
+      await apiPost(serverUri, authCode);
       return true;
-    } catch (error) {
-      // ✅ 토큰은 있지만 만료 또는 유효하지 않은 경우
-      if (error is KakaoException && error.isInvalidTokenError()) {
-        print('⚠️ 토큰 만료: $error');
-        return false;
-      } else {
-        print('❌ 토큰 조회 실패: $error');
-        return false;
-      }
+    } catch (e) {
+      return false;
     }
-  }
-
-  // 로그인 시도 (토큰 없거나 실패했을 때)
-  try {
-    OAuthToken token;
-    if (await isKakaoTalkInstalled()) {
-      try {
-        token = await UserApi.instance.loginWithKakaoTalk();
-      } catch (error) {
-        if (error is PlatformException && error.code == 'CANCELED')
-          return false;
-        // 카카오톡 로그인 실패 → 카카오계정 로그인 시도
-        token = await UserApi.instance.loginWithKakaoAccount();
-      }
-    } else {
-      token = await UserApi.instance.loginWithKakaoAccount();
-    }
-
-    // 로그인 성공 후 authCode 요청
-    final String authCode = await AuthCodeClient.instance.authorize(
-      redirectUri: redirectUri,
-    );
-    print(token);
-    apiPost('http://192.168.0.12:8080/auth/kakao', authCode);
-    return true;
   } catch (e) {
-    print(e);
     return false;
   }
 }
@@ -70,7 +94,7 @@ class KakaoLogin extends StatelessWidget {
     // GestureDetector 사용
     return GestureDetector(
       onTap: () async {
-        final success = await loginLogic();
+        final success = await loginLogic(context);
         if (context.mounted && success) {
           Navigator.pushReplacement(
             context,
