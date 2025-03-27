@@ -30,7 +30,7 @@ public class KakaoOAuthClient {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUri);
+        body.add("redirect_uri", "kakao0eca4efd682449e5b2780d3dc841f88d://oauth");
         body.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
