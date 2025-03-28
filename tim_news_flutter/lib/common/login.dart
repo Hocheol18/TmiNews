@@ -4,12 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:tim_news_flutter/api/login/loginPost.dart';
+import 'package:tim_news_flutter/api/login/authRepository.dart';
 import '../screens/mainPage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<bool> loginLogic(BuildContext context) async {
+Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
   final String redirectUri = "kakao${dotenv.env['NATIVE_APP_KEY']}://oauth";
   final String serverUri = 'http://192.168.0.16:8080/auth/kakao';
+
+  // apiService 가져오기
+  final apiService = ref.read(authRepositoryProvider);
 
   try {
     // 토큰이 이미 있는지 확인
@@ -23,7 +27,7 @@ Future<bool> loginLogic(BuildContext context) async {
           redirectUri: redirectUri,
         );
 
-        await apiPost(serverUri, authCode);
+        await apiService.apiPost(serverUri, authCode);
         return true;
       } catch (error) {
         // 토큰이 유효하지 않거나 만료된 경우
@@ -76,7 +80,7 @@ Future<bool> loginLogic(BuildContext context) async {
         redirectUri: redirectUri,
       );
 
-      await apiPost(serverUri, authCode);
+      await apiService.apiPost(serverUri, authCode);
       return true;
     } catch (e) {
       return false;
@@ -86,15 +90,16 @@ Future<bool> loginLogic(BuildContext context) async {
   }
 }
 
-class KakaoLogin extends StatelessWidget {
+class KakaoLogin extends ConsumerWidget {
   const KakaoLogin({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
     // GestureDetector 사용
     return GestureDetector(
       onTap: () async {
-        final success = await loginLogic(context);
+        final success = await loginLogic(context, ref);
         if (context.mounted && success) {
           Navigator.pushReplacement(
             context,

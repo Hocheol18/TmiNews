@@ -1,16 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../user/secure_storage.dart';
+import '../api/provider/provider.dart';
 
-class NewsMainPage extends StatefulWidget {
+@riverpod
+class NewsMainPage extends ConsumerStatefulWidget {
   const NewsMainPage({super.key});
 
   @override
-  State<NewsMainPage> createState() => _NewsMainPageState();
+  ConsumerState<NewsMainPage> createState() => _NewsMainPageState();
 }
 
-class _NewsMainPageState extends State<NewsMainPage> {
+class _NewsMainPageState extends ConsumerState<NewsMainPage> {
   final List<String> _tabTitles = ['재테크', 'IT', '건강', '사회', '연애', '스포츠'];
   int _tabIndex = 0;
 
@@ -18,14 +22,6 @@ class _NewsMainPageState extends State<NewsMainPage> {
     setState(() {
       _tabIndex = index;
     });
-  }
-
-  logoutFunction() async {
-    try {
-      await UserApi.instance.logout();
-    } catch (error) {
-      print('로그아웃 실패, SDK에서 토큰 폐기 $error');
-    }
   }
 
   kakaoLogout() async {
@@ -42,8 +38,10 @@ class _NewsMainPageState extends State<NewsMainPage> {
               ),
               CupertinoDialogAction(
                 isDestructiveAction: true,
-                onPressed: () {
-                  logoutFunction();
+                onPressed: () async {
+                  final secureStorage = ref.read(secureStorageProvider);
+                  await secureStorage.logout();
+                  await ref.read(authControllerProvider.notifier).logOut();
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',
@@ -79,6 +77,16 @@ class _NewsMainPageState extends State<NewsMainPage> {
           ),
         ),
       ),
+      body: Container(child: ElevatedButton(onPressed: () async {
+        final secureStorage = ref.read(secureStorageProvider);
+
+        // 토큰 불러오기
+        final accessToken = await secureStorage.readAccessToken();
+        final refreshToken = await secureStorage.readRefreshToken();
+
+        print('Access Token: $accessToken');
+        print('Refresh Token: $refreshToken');
+      }, child: Text('눌러')),),
     );
   }
 }

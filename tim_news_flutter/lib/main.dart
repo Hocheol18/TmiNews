@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/screens/loginPage.dart';
 import 'package:tim_news_flutter/screens/mainPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
@@ -16,7 +17,7 @@ Future<void> main() async {
     javaScriptAppKey: javaScriptAppKey,
   );
 
-  runApp(MyApp());
+  runApp(ProviderScope(child:MyApp()));
 }
 
 
