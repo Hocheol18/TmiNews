@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tim_news_flutter/api/login/authRepository.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/secure_storage.dart';
@@ -42,6 +43,7 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
                   final secureStorage = ref.read(secureStorageProvider);
                   await secureStorage.logout();
                   await ref.read(authControllerProvider.notifier).logOut();
+                  await ref.read(authRepositoryProvider).kakaoLogout();
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',
@@ -83,6 +85,9 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
         // 토큰 불러오기
         final accessToken = await secureStorage.readAccessToken();
         final refreshToken = await secureStorage.readRefreshToken();
+        final userModel = await secureStorage.readUserInfo();
+        print(userModel?.nickname);
+
 
         print('Access Token: $accessToken');
         print('Refresh Token: $refreshToken');

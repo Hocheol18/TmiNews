@@ -1,19 +1,17 @@
 class UserModel {
-  final String id;
   final String nickname;
-  final String email;
+  final String profile_image_url;
 
-  UserModel({required this.id, required this.email, required this.nickname});
+  UserModel({required this.nickname, required this.profile_image_url});
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      email: json['email'],
       nickname: json['nickname'],
+      profile_image_url: json['profile_image_url'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'email': email, 'nickname': nickname};
+    return {'nickname': nickname, 'profile_image_url': profile_image_url};
   }
 }

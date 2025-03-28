@@ -55,29 +55,26 @@ class AuthRepository {
     ]);
   }
 
+  Future<void> kakaoLogout() async {
+    final String? accessToken = await storage.readAccessToken();
+    await dio.post(
+      'http://192.168.0.16:8080/auth/logout',
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+    );
+  }
+
   Future<void> kakaoMatch() async {
     final user = await UserApi.instance.me();
-
-    // 필요한 정보가 모두 있는지 확인
     final kakaoAccount = user.kakaoAccount;
     final profile = kakaoAccount?.profile;
-    final nickname = profile?.nickname;
-    final email = kakaoAccount?.email;
-    if (kakaoAccount == null &&
-        profile == null &&
-        (nickname == null || email == null)) {
-      print('카카오 계정 정보가 없습니다.');
+    if (profile == null) {
       return;
     }
 
-    // 사용자 정보 저장
-    await storage.saveUserInfo(user.id.toString(), nickname!, email!);
+    final nickname = profile.nickname;
+    final profile_image_url = profile.profileImageUrl;
 
-    print(
-      '사용자 정보 저장 성공\n'
-      '회원번호: ${user.id}\n'
-      '닉네임: $nickname\n'
-      '이메일: $email',
-    );
+    // 사용자 정보 저장
+    await storage.saveUserInfo(nickname!, profile_image_url!);
   }
 }

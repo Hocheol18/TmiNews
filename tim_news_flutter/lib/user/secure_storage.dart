@@ -73,12 +73,11 @@ class SecureStorage {
     }
   }
 
-  Future<void> saveUserInfo(String id, String nickname, String email) async {
+  Future<void> saveUserInfo(String nickname, String profile_image_url) async {
     try {
       final userInfoJson = jsonEncode({
-        'id': id,
         'nickname': nickname,
-        'email': email
+        'profile_image_url': profile_image_url
       });
 
       await storage.write(key: "userinfo", value: userInfoJson);
