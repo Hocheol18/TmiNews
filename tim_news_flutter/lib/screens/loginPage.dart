@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../common/login.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+
 
 textFunction(String txt, double txtSize) {
   return RotateAnimatedText(
@@ -8,11 +10,6 @@ textFunction(String txt, double txtSize) {
     textStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: txtSize),
     duration: const Duration(milliseconds: 2000),
   );
-}
-
-void main() {
-  // 웹 환경에서 카카오 로그인을 정상적으로 완료하려면 runApp() 호출 전 아래 메서드 호출 필요
-
 }
 
 class TitleWidget extends StatelessWidget {
