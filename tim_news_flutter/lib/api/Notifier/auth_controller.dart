@@ -36,9 +36,6 @@ class UserNotifier extends StateNotifier<UserState> {
   Future<void> logOut() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // 카카오 SDK 로그아웃
-      await UserApi.instance.logout();
-
       // 유저 데이터 삭제
       await _repository.clearUser();
 

@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/secure_storage.dart';
 import '../api/provider/provider.dart';
 
-@riverpod
 class NewsMainPage extends ConsumerStatefulWidget {
   const NewsMainPage({super.key});
 
@@ -41,9 +40,10 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
                 isDestructiveAction: true,
                 onPressed: () async {
                   final secureStorage = ref.read(secureStorageProvider);
+                  await ref.read(authRepositoryProvider).kakaoLogout();
                   await secureStorage.logout();
                   await ref.read(authControllerProvider.notifier).logOut();
-                  await ref.read(authRepositoryProvider).kakaoLogout();
+
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',
