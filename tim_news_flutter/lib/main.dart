@@ -7,11 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'news/newsCreatePage.dart';
 
 Future<void> main() async {
-  // 환경변수 로그인
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   String nativeAppKey = dotenv.env['NATIVE_APP_KEY'] ?? '';
   String javaScriptAppKey = dotenv.env['JAVASCRIPT_KEY'] ?? '';
-
+  // 환경변수 로그인
+  KakaoSdk.init(nativeAppKey: dotenv.env['NATIVE_APP_KEY'] ?? '');
+  final hashkey = await KakaoSdk.origin;
+  print(hashkey);
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
     javaScriptAppKey: javaScriptAppKey,
@@ -29,6 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: '내 앱',
       initialRoute: '/login',
       routes: {

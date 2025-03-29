@@ -8,6 +8,19 @@ import 'package:tim_news_flutter/api/login/authRepository.dart';
 import '../screens/mainPage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+Future<void> main() async {
+  print("dasdf");
+  KakaoSdk.init(nativeAppKey:dotenv.env['NATIVE_APP_KEY']);
+
+  try {
+    final hashkey = await KakaoSdk.origin;
+    print(hashkey);
+  } catch (e) {
+    print(e);
+  }
+
+}
+
 Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
   final String redirectUri = "kakao${dotenv.env['NATIVE_APP_KEY']}://oauth";
   final String serverUri = 'http://192.168.0.16:8080/auth/kakao';
@@ -30,6 +43,7 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
         await apiService.apiPost(serverUri, authCode);
         return true;
       } catch (error) {
+        print("1");
         // 토큰이 유효하지 않거나 만료된 경우
         // 아래 로그인 로직으로 계속 진행
       }
@@ -37,6 +51,7 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
 
     // 토큰이 없거나 유효하지 않은 경우 로그인 시도
     try {
+      print("2");
       // 카카오톡 앱이 설치되어 있는지 확인
       if (await isKakaoTalkInstalled()) {
         try {
@@ -45,6 +60,7 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
         } catch (error) {
           // 사용자가 취소했거나 카카오톡 로그인 실패
           if (error is PlatformException && error.code == 'CANCELED') {
+            print("3");
             showCupertinoModalPopup<void>(
               context: context,
               builder:
@@ -83,9 +99,11 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
       await apiService.apiPost(serverUri, authCode);
       return true;
     } catch (e) {
+      print(e);
       return false;
     }
   } catch (e) {
+    print(e);
     return false;
   }
 }

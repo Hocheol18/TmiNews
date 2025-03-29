@@ -1,3 +1,9 @@
+val kakaoKey = if (project.hasProperty("KAKAO_NATIVE_APP_KEY")) {
+    project.property("KAKAO_NATIVE_APP_KEY").toString()
+} else {
+    "7f3f62379a7fbe0a72833998628ac0c0"
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,7 +14,7 @@ plugins {
 android {
     namespace = "com.example.tim_news_flutter"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -28,6 +34,14 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // resValue 구문 수정
+        resValue("string", "kakao_app_key", "\"${kakaoKey}\"")
+
+        // manifestPlaceholders 수정
+        manifestPlaceholders["kakaoKey"] = kakaoKey
+        manifestPlaceholders["KAKAO_NATIVE_REDIRECT_SCHEME"] = "kakao${kakaoKey}"
+
     }
 
     buildTypes {
@@ -41,16 +55,4 @@ android {
 
 flutter {
     source = "../.."
-}
-
-
-def kakaoKey = project.hasProperty('KAKAO_NATIVE_APP_KEY') ? project.KAKAO_NATIVE_APP_KEY : ""
-
-android {
-    defaultConfig {
-        resValue "string", "kakao_app_key", "\"${kakaoKey}\""
-        manifestPlaceholders = [
-            KAKAO_NATIVE_REDIRECT_SCHEME: "kakao${kakaoKey}"
-        ]
-    }
 }
