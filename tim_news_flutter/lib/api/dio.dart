@@ -27,7 +27,7 @@ class CustomInterceptor extends Interceptor {
     required this.ref,
   });
 
-  get ip => '192.168.0.16:8080';
+  get ip => '172.30.1.95:8080';
 
   // 1) 요청을 보낼때
   @override
