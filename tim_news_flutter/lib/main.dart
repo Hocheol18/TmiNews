@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/screens/loginPage.dart';
 import 'package:tim_news_flutter/screens/mainPage.dart';
+import 'package:tim_news_flutter/screens/myPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'news/newsCreatePage.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/main' : (context) => MainPage(),
         '/create' : (context) => NewsCreatePage(),
+        '/mypage' : (context) => MyPage(),
       },
     );
   }
