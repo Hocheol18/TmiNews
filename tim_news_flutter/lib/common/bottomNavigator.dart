@@ -20,6 +20,15 @@ class BottomNavigator extends StatelessWidget {
           TabItem(icon: CupertinoIcons.book, title: '보기'),
           TabItem(icon: Icons.person, title: '마이'),
         ],
+        onTap: (int index) {
+          if (index == 0) {
+            // Navigator.pushReplacementNamed(context, '/create');
+          } else if (index == 1) {
+            Navigator.pushReplacementNamed(context, '/main');
+          } else if (index == 2) {
+            Navigator.pushReplacementNamed(context, '/mypage');
+          }
+        },
       ),
     );
   }

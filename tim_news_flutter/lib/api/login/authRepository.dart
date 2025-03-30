@@ -58,7 +58,7 @@ class AuthRepository {
   Future<void> kakaoLogout() async {
     final String? refreshToken = await storage.readRefreshToken();
     await dio.post(
-      'http://192.168.0.16:8080/auth/logout',
+      'http://172.30.1.95:8080/auth/logout',
       options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
     );
   }
