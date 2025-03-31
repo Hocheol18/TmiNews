@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/api/provider/provider.dart';
 
@@ -27,7 +28,7 @@ class CustomInterceptor extends Interceptor {
     required this.ref,
   });
 
-  get ip => '192.168.0.16:8080';
+  get ip => dotenv.env['LOCAL_API_URL'];
 
   // 1) 요청을 보낼때
   @override
