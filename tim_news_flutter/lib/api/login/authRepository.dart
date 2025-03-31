@@ -61,7 +61,7 @@ class AuthRepository {
     await dio.post(
 
       'http://${dotenv.env['LOCAL_API_URL']}/auth/logout',
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
 
     );
   }
