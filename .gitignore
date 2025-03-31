@@ -16,3 +16,6 @@ application.yml
 
 # Docker 등
 mysql_data/
+
+# Python 가상환경 폴더 무시하기
+AI/venv/

@@ -15,6 +15,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import tmi.app.entity.User;
+import tmi.app.repository.UserRepository;
+import java.util.HashMap;
+import tmi.app.dto.NewsDetailDto;
+
+
+
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +32,7 @@ public class NewsController {
   private final NewsService newsService;
   private final JwtProvider jwtProvider;
   private static final Logger logger = LoggerFactory.getLogger(NewsController.class);
+  private final UserRepository userRepository;
 
   @PostMapping("/preview")
   public ResponseEntity<NewsPreviewResponse> previewNews(
@@ -88,8 +96,40 @@ public class NewsController {
   }
 
   @PostMapping
-  public ResponseEntity<?> registerNews(@RequestBody NewsRegisterRequest request) {
-    newsService.registerNews(request);
+  public ResponseEntity<?> registerNews(@RequestHeader("Authorization") String bearerToken,
+                                        @RequestBody NewsRegisterRequest request) {
+    // JWT에서 토큰 추출 후 userId 조회
+    String token = bearerToken.replace("Bearer ", "");
+    Long userId = jwtProvider.extractUserId(token);
+    logger.info("토큰으로 추출한 userId: {}", userId);
+
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // NewsService에 User 객체를 함께 전달
+    newsService.registerNews(request, user);
     return ResponseEntity.status(201).build();
   }
+  @GetMapping("/{newsId}")
+  public ResponseEntity<?> getNewsDetail(
+          @RequestHeader("Authorization") String bearerToken,
+          @PathVariable Long newsId
+  ) {
+    // (1) JWT 파싱, 사용자 권한 체크 등 필요 시 처리
+    String token = bearerToken.replace("Bearer ", "");
+    Long userId = jwtProvider.extractUserId(token);
+
+    // (2) NewsService에서 뉴스 정보 조회
+    NewsDetailDto newsDetail = newsService.getNewsDetail(newsId, userId);
+
+    // (3) 응답 생성
+    Map<String, Object> responseData = new HashMap<>();
+    responseData.put("status", 200);
+    responseData.put("message", "뉴스페이지 조회 성공");
+    responseData.put("data", newsDetail);
+
+    return ResponseEntity.ok(responseData);
+  }
+
+
 }
