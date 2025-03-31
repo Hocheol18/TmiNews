@@ -25,6 +25,7 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
   final String redirectUri = "kakao${dotenv.env['NATIVE_APP_KEY']}://oauth";
   final String serverUri = 'http://${dotenv.env['LOCAL_API_URL']}/auth/kakao';
 
+
   // apiService 가져오기
   final apiService = ref.read(authRepositoryProvider);
 

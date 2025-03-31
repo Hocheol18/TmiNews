@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tim_news_flutter/api/login/authRepository.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/secure_storage.dart';
 import '../api/provider/provider.dart';
 
-@riverpod
 class NewsMainPage extends ConsumerStatefulWidget {
   const NewsMainPage({super.key});
 
@@ -41,9 +39,10 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
                 isDestructiveAction: true,
                 onPressed: () async {
                   final secureStorage = ref.read(secureStorageProvider);
+                  await ref.read(authRepositoryProvider).kakaoLogout();
                   await secureStorage.logout();
                   await ref.read(authControllerProvider.notifier).logOut();
-                  await ref.read(authRepositoryProvider).kakaoLogout();
+
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/login',

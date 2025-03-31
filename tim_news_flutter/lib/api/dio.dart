@@ -28,7 +28,10 @@ class CustomInterceptor extends Interceptor {
     required this.ref,
   });
 
+
   get ip => dotenv.env['LOCAL_API_URL'];
+
+
 
   // 1) 요청을 보낼때
   @override
