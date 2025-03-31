@@ -5,7 +5,7 @@ import 'package:tim_news_flutter/screens/mainPage.dart';
 import 'package:tim_news_flutter/screens/myPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'news/newsCreatePage.dart';
+import 'news/news_create_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '내 앱',
-      initialRoute: '/login',
+      initialRoute: '/create',
       routes: {
         '/login': (context) => LoginPage(),
         '/main' : (context) => MainPage(),
