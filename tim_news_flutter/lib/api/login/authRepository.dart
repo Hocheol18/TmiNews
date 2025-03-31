@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -58,8 +59,10 @@ class AuthRepository {
   Future<void> kakaoLogout() async {
     final String? refreshToken = await storage.readRefreshToken();
     await dio.post(
-      'http://172.30.1.95:8080/auth/logout',
-      options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
+
+      'http://${dotenv.env['LOCAL_API_URL']}/auth/logout',
+      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+
     );
   }
 
