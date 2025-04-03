@@ -12,7 +12,7 @@ import java.util.List;
 public class MyPageResponse {
 
     private UserInfo user;
-    private List<NewsRegisterRequest> newsList;
+    private List<NewsDto> newsList;
 
     @Getter
     @Builder
