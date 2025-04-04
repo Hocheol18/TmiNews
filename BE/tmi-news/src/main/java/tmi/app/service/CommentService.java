@@ -68,12 +68,11 @@ public class CommentService {
         Comment comment = commentRepository.findByIdWithUserAndNews(replyId)
                 .orElseThrow(() -> new CustomException("존재하지 않는 댓글입니다."));
 
-        System.out.println("🔐 login userId: " + userId);
-        System.out.println("💬 who comment: " + comment.getUser());
-        System.out.println("💬 comment ID: " + comment.getUser().getUserId());
-        System.out.println("✅ reply newsId: " + comment.getNews().getNewsId());
-        System.out.println("🆚 request newsId: " + newsId);
-        System.out.println("📌 findByIdWithUserAndNews() called!");
+        System.out.println("login userId: " + userId);
+        System.out.println("who comment: " + comment.getUser());
+        System.out.println("comment ID: " + comment.getUser().getUserId());
+        System.out.println("reply newsId: " + comment.getNews().getNewsId());
+        System.out.println("request newsId: " + newsId);
 
         if (!comment.getUser().getUserId().equals(userId)) {
             throw new CustomException("댓글을 수정할 권한이 없습니다.");

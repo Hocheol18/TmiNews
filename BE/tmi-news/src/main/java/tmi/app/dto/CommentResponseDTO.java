@@ -15,7 +15,7 @@ public class CommentResponseDTO {
     private String content;
     private LocalDateTime createdAt;
     private WriterDTO user;
-    private List<CommentResponseDTO> children; // 👈 대댓글 리스트 추가
+    private List<CommentResponseDTO> children; // 대댓글 리스트
 
     @Builder
     @Getter

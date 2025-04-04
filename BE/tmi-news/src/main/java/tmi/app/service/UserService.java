@@ -18,19 +18,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final NewsRepository newsRepository;
 
-    // 🔹 내 마이페이지 조회
+    // 내 마이페이지 조회
     @Transactional(readOnly = true)
     public MyPageResponse getMyPage(Long userId) {
         return buildMyPageResponse(userId);
     }
 
-    // 🔹 친구 마이페이지 조회
+    // 친구 마이페이지 조회
     @Transactional(readOnly = true)
     public MyPageResponse getFriendPage(Long friendId) {
         return buildMyPageResponse(friendId);
     }
 
-    // ✅ 공통 로직 추출
+    // 공통 로직 추출
     private MyPageResponse buildMyPageResponse(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));

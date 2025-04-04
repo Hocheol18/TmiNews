@@ -31,7 +31,7 @@ public class NewsService {
         }
 
         private LocalDateTime parseDateTime(String dateStr) {
-                // "2018-03-28" 같은 형태라면 LocalDate로 파싱
+                // "1995-09-02" 같은 형태라면 LocalDate로 파싱
                 if (dateStr == null || dateStr.isEmpty()) {
                         return LocalDateTime.now();
                 }
