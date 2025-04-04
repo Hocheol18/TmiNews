@@ -26,7 +26,7 @@ public class Friendship {
     @JoinColumn(name = "friend_id", nullable = false)
     private User friend;
 
-    // 👇 추가: user와 friend를 받는 생성자
+    // user와 friend를 받는 생성자
     public Friendship(User user, User friend) {
         this.user = user;
         this.friend = friend;

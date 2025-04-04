@@ -21,7 +21,7 @@ public class FriendController {
     private final JwtProvider jwtProvider;
     private final UserService userService;
 
-    // 🔹 친구 요청 보내기
+    // 친구 요청 보내기
     @PostMapping("/request")
     public ResponseEntity<String> sendFriendRequest(
             @RequestHeader("Authorization") String bearerToken,
@@ -32,7 +32,7 @@ public class FriendController {
         return ResponseEntity.ok("친구 요청을 보냈습니다.");
     }
 
-    // 🔹 친구 요청 수락
+    // 친구 요청 수락
     @PostMapping("/accept")
     public ResponseEntity<String> acceptFriendRequest(
             @RequestHeader("Authorization") String bearerToken,
@@ -43,7 +43,7 @@ public class FriendController {
         return ResponseEntity.ok("친구 요청을 수락했습니다.");
     }
 
-    // 🔹 친구 요청 거절
+    // 친구 요청 거절
     @PostMapping("/reject")
     public ResponseEntity<String> rejectFriendRequest(
             @RequestHeader("Authorization") String bearerToken,
@@ -54,7 +54,7 @@ public class FriendController {
         return ResponseEntity.ok("친구 요청을 거절했습니다.");
     }
 
-    // 🔹 친구 요청 취소
+    // 친구 요청 취소
     @DeleteMapping("/cancel")
     public ResponseEntity<String> cancelFriendRequest(
             @RequestHeader("Authorization") String bearerToken,
@@ -65,7 +65,7 @@ public class FriendController {
         return ResponseEntity.ok("친구 요청을 취소했습니다.");
     }
 
-    // 🔹 친구 목록 조회
+    // 친구 목록 조회
     @GetMapping("/list")
     public ResponseEntity<List<FriendDto>> getFriendList(
             @RequestHeader("Authorization") String bearerToken) {
@@ -75,7 +75,7 @@ public class FriendController {
         return ResponseEntity.ok(friends);
     }
 
-    // 🔹 친구 삭제
+    // 친구 삭제
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteFriend(
             @RequestHeader("Authorization") String bearerToken,
@@ -86,7 +86,7 @@ public class FriendController {
         return ResponseEntity.ok("친구를 삭제했습니다.");
     }
 
-    // 🔹 친구 마이페이지 조회
+    // 친구 마이페이지 조회
     @GetMapping("/{friendId}/mypage")
     public ResponseEntity<MyPageResponse> getFriendPage(
             @PathVariable Long friendId) {
@@ -95,7 +95,7 @@ public class FriendController {
         return ResponseEntity.ok(response);
     }
 
-    // 🛠 JWT에서 userId 추출하는 공통 메서드
+    // JWT에서 userId 추출하는 공통 메서드
     private Long extractUserIdFromHeader(String bearerToken) {
         String token = bearerToken.replace("Bearer ", "");
         return jwtProvider.extractUserId(token);

@@ -13,7 +13,7 @@ public class KakaoUserInfoResponse {
         this.profileImageUrl = profileImageUrl;
     }
 
-    // ✅ Getter & Setter 추가
+    // Getter & Setter 추가
     public String getId() {
         return id;
     }

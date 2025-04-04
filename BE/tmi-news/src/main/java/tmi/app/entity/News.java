@@ -18,7 +18,7 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long newsId; // 뉴스 ID (PK)
 
-    // ✅ User와 연관 관계 설정 (ManyToOne) (지연 로딩 추가)
+    // User와 연관 관계 설정 (ManyToOne) (지연 로딩 추가)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
