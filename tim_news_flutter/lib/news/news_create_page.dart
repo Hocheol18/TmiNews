@@ -3,6 +3,7 @@ import 'package:tim_news_flutter/theme/colors.dart';
 
 import '../theme/news_create_page_styles.dart';
 import 'calendar/multi_example.dart';
+import 'image/image_picker.dart';
 
 class NewsCreatePage extends StatelessWidget {
   const NewsCreatePage({super.key});
@@ -56,122 +57,177 @@ class _News_createState extends State<News_create> {
         : "10글자 이상 입력해주세요.";
   }
 
+  String selectedDate = '날짜를 선택하세요';
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('기사 분류 *', style: titleTextStyle),
-        Container(
-          padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:
-                menuItems
-                    .map((item) => Text(item, style: menuTextStyle))
-                    .toList(),
-          ),
-        ),
-        SizedBox(height: 25),
-        Text('기사 내용 *', style: titleTextStyle),
-        Scrollbar(
-          controller: _scrollController, // 스크롤 컨트롤러 연결
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-            child: TextFormField(
-              scrollController: _scrollController,
-              controller: _editingController,
-              // TextFormField에도 동일한 스크롤 컨트롤러 연결
-              maxLines: null,
-              // 여러 줄 입력 가능
-              expands: true,
-              // 부모 높이에 맞게 확장
-              textAlignVertical: TextAlignVertical.top,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.all(15),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4),
+        // 기존 내용을 Expanded로 감싸기
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('기사 분류 *', style: titleTextStyle),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:
+                        menuItems
+                            .map((item) => Text(item, style: menuTextStyle))
+                            .toList(),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                  borderRadius: BorderRadius.circular(4),
+                SizedBox(height: 20),
+                Text('기사 제목', style: titleTextStyle),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                  child: TextFormField(
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(5),
+                      border: OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
                 ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                  borderRadius: BorderRadius.circular(4),
+                SizedBox(height: 20),
+                Text('기사 날짜', style: titleTextStyle),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const TableBasicsExample(),
+                      ),
+                    ).then((value) {
+                      // 날짜가 선택되어 반환되었을 때 처리
+                      if (value != null) {
+                        setState(() {
+                          selectedDate =
+                              value.toString(); // 반환된 날짜 형식에 맞게 조정 필요
+                        });
+                      }
+                    });
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(selectedDate, style: TextStyle(fontSize: 16)),
+                        Icon(Icons.calendar_today, size: 20),
+                      ],
+                    ),
+                  ),
                 ),
-                errorText: checkErrorText(),
-                errorStyle: const TextStyle(color: Colors.red, fontSize: 13),
-                errorMaxLines: 1,
-              ),
-              autovalidateMode: AutovalidateMode.always,
-              onFieldSubmitted: (value) {
-                print('submit $value');
-              },
-              onChanged: (value) {
-                setState(() {});
-                print("setState $value");
-              },
-              validator: (value) {
-                print("validator $value");
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: 20),
-        Text('기사 제목', style: titleTextStyle),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-          child: TextFormField(
-            textAlignVertical: TextAlignVertical.top,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(5),
-              border: OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
-                borderRadius: BorderRadius.circular(4),
-              ),
+                // ElevatedButton(
+                //   style: ButtonStyle(),
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (_) => const TableBasicsExample(),
+                //       ),
+                //     );
+                //   },
+                //   child: Text('눌러'),
+                // ),
+                SizedBox(height: 25),
+                Text('기사 내용 *', style: titleTextStyle),
+                Scrollbar(
+                  controller: _scrollController,
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                    child: TextFormField(
+                      scrollController: _scrollController,
+                      controller: _editingController,
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(15),
+                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blue),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        errorText: checkErrorText(),
+                        errorStyle: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 13,
+                        ),
+                        errorMaxLines: 1,
+                      ),
+                      autovalidateMode: AutovalidateMode.always,
+                      onFieldSubmitted: (value) {
+                        print('submit $value');
+                      },
+                      onChanged: (value) {
+                        setState(() {});
+                        print("setState $value");
+                      },
+                      validator: (value) {
+                        print("validator $value");
+                      },
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20),
+              ],
             ),
           ),
         ),
 
-        SizedBox(height: 20),
-        Text('기사 날짜', style: titleTextStyle),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const TableBasicsExample()),
-            );
-          },
-          child: Text('눌러'),
-        ),
-        SizedBox(height: 20),
-        Text('사진 첨부하기', style: titleTextStyle),
+        // 하단에 고정될 버튼
         Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-          child: TextFormField(
-            textAlignVertical: TextAlignVertical.top,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(5),
-              border: OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey),
-                borderRadius: BorderRadius.circular(4),
+          width: 200,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: yellowColor,
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
-                borderRadius: BorderRadius.circular(4),
+            ),
+            onPressed: () {
+              // 버튼 동작 구현
+              print('게시하기 버튼 클릭');
+            },
+            child: Text(
+              '다음으로',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
           ),
