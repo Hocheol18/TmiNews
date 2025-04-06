@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tim_news_flutter/api/provider/provider.dart';
+import 'package:tim_news_flutter/api/api_login/provider/provider.dart';
 
 import '../user/secure_storage.dart';
-import 'model/exception_model.dart';
-import 'model/user_model.dart';
+import 'api_login/model/exception_model.dart';
+import 'api_login/model/user_model.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();

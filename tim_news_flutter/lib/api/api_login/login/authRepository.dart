@@ -3,8 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../user/secure_storage.dart';
-import '../dio.dart';
+import '../../../user/secure_storage.dart';
+import '../../dio.dart';
 import '../error/custom_exception.dart';
 import '../error/result.dart';
 import '../error/run_catching_Exception.dart';
@@ -62,7 +62,7 @@ class AuthRepository {
 
     await dio.post(
       'http://${dotenv.env['LOCAL_API_URL']}/auth/logout',
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
 
     );
   }
