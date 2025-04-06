@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tim_news_flutter/api/model/user_model.dart';
+import 'package:tim_news_flutter/api/api_login/model/user_model.dart';
 
 // riverpod_generator를 위한 코드 생성
 part 'secure_storage.g.dart';
