@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:tim_news_flutter/api/error/result.dart';
+import 'package:tim_news_flutter/api/api_login/error/result.dart';
 
 import 'custom_exception.dart';
 

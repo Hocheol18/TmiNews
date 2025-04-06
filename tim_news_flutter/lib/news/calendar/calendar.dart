@@ -67,7 +67,7 @@ class _TableBasicsExampleState extends State<TableBasicsExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TableCalendar - Basics'),
+        title: const Text('날짜 선택하기'),
       ),
       body: TableCalendar(
         firstDay: kFirstDay,

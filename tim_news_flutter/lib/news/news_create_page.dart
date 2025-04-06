@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tim_news_flutter/theme/colors.dart';
 
 import '../theme/news_create_page_styles.dart';
-import 'calendar/multi_example.dart';
+import 'calendar/calendar.dart';
 import 'image/image_picker.dart';
 
 class NewsCreatePage extends StatelessWidget {
@@ -64,7 +64,6 @@ class _News_createState extends State<News_create> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 기존 내용을 Expanded로 감싸기
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -137,18 +136,6 @@ class _News_createState extends State<News_create> {
                     ),
                   ),
                 ),
-                // ElevatedButton(
-                //   style: ButtonStyle(),
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (_) => const TableBasicsExample(),
-                //       ),
-                //     );
-                //   },
-                //   child: Text('눌러'),
-                // ),
                 SizedBox(height: 25),
                 Text('기사 내용 *', style: titleTextStyle),
                 Scrollbar(
@@ -199,38 +186,41 @@ class _News_createState extends State<News_create> {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 20),
               ],
             ),
           ),
         ),
-
-        // 하단에 고정될 버튼
-        Container(
-          width: 200,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: yellowColor,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 200,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: yellowColor,
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const ImageAdd()),
+                  );
+                },
+                child: Text(
+                  '다음으로',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
-            onPressed: () {
-              // 버튼 동작 구현
-              print('게시하기 버튼 클릭');
-            },
-            child: Text(
-              '다음으로',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
+          ],
         ),
       ],
     );

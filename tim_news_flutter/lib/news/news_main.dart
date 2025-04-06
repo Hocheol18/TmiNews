@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tim_news_flutter/api/login/authRepository.dart';
+import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../user/secure_storage.dart';
-import '../api/provider/provider.dart';
+import '../api/api_login/provider/provider.dart';
 
 class NewsMainPage extends ConsumerStatefulWidget {
   const NewsMainPage({super.key});
