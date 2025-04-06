@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tim_news_flutter/mypage/myPage_friendsList.dart';
+import 'package:tim_news_flutter/mypage/myPage_notification.dart';
+import 'package:tim_news_flutter/common/articleBlock.dart';
 
 class MypageMain extends ConsumerStatefulWidget {
   const MypageMain({super.key});
@@ -20,7 +23,12 @@ class _MypageMainState extends ConsumerState<MypageMain> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MyPageNotification()),
+              );
+            },
           )
         ],
       ),
@@ -47,11 +55,19 @@ class _MypageMainState extends ConsumerState<MypageMain> {
                   ),
                   Expanded(
                       flex: 1,
-                      child: Column(
-                        children: [
-                          Text('친구', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                          Text('000 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
-                        ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MypageFriendList()),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text('친구', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                            Text('000 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
+                          ],
+                        ),
                       )
                   ),
                 ],
@@ -77,51 +93,67 @@ class _ContentListState extends State<ContentList> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Flexible(flex: 2, child: Container()),
-            Flexible(
-              flex: 1,
-              child: Row(
-                children: [
-                  Radio(
-                    value: '최신순',
-                    groupValue: selected,
-                    onChanged: (String ? value){
-                    setState(() {
-                    selected = value!;
-                    });
-                    },
-                    activeColor: Color(0xffFFD43A),
-                  ),
-                  Text('최신순'),
-                ]
-              ),
-            ),
-            Flexible(
-              flex: 1,
-              child: Row(
+    return Expanded(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Flexible(flex: 2, child: Container()),
+              Flexible(
+                flex: 1,
+                child: Row(
                   children: [
                     Radio(
-                      value: '댓글순',
+                      value: '최신순',
                       groupValue: selected,
                       onChanged: (String ? value){
-                        setState(() {
-                          selected = value!;
-                        });
+                      setState(() {
+                      selected = value!;
+                      });
                       },
                       activeColor: Color(0xffFFD43A),
                     ),
-                    Text('댓글순'),
+                    Text('최신순'),
                   ]
+                ),
               ),
+              Flexible(
+                flex: 1,
+                child: Row(
+                    children: [
+                      Radio(
+                        value: '댓글순',
+                        groupValue: selected,
+                        onChanged: (String ? value){
+                          setState(() {
+                            selected = value!;
+                          });
+                        },
+                        activeColor: Color(0xffFFD43A),
+                      ),
+                      Text('댓글순'),
+                    ]
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            // 3 * n의 타일로 글 보여주기
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1.0,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: 17,
+              itemBuilder: (context, index) {
+                return ArticleBlock(content: '글 내용 미리보기 글 내용 미리보기 글 내용 미리보기 글 내용 미리보기', link: '');
+              },
             ),
-          ],
-        ),
-        Text('여기에 글 목록들(ListView이용해서)')
-      ],
+          )
+        ],
+      ),
     );
   }
 }
