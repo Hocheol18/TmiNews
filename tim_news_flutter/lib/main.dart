@@ -15,10 +15,7 @@ Future<void> main() async {
   String javaScriptAppKey = dotenv.env['JAVASCRIPT_KEY'] ?? '';
   // 환경변수 로그인
   KakaoSdk.init(nativeAppKey: dotenv.env['NATIVE_APP_KEY'] ?? '');
-  final hashkey = await KakaoSdk.origin;
-  print(hashkey);
   KakaoSdk.init(nativeAppKey: nativeAppKey, javaScriptAppKey: javaScriptAppKey);
-
   runApp(ProviderScope(child: MyApp()));
 }
 
