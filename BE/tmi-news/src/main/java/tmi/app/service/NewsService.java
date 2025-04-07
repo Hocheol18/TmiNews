@@ -1,13 +1,18 @@
 package tmi.app.service;
 
 import tmi.app.dto.NewsRegisterRequest;
+import tmi.app.dto.CommentResponseDTO;
 import tmi.app.entity.News;
+import tmi.app.entity.NewsLike;
+import tmi.app.repository.NewsLikeRepository;
 import tmi.app.repository.NewsRepository;
+import tmi.app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import tmi.app.entity.User;
 import tmi.app.dto.NewsDetailDto;
 import java.util.Collections;
@@ -18,6 +23,9 @@ import java.util.Collections;
 public class NewsService {
 
         private final NewsRepository newsRepository;
+        private final NewsLikeRepository newsLikeRepository;
+        private final UserRepository userRepository;
+        private final CommentService commentService;
 
         public void registerNews(NewsRegisterRequest request, User user) {
                 // news_time을 LocalDateTime으로 파싱
@@ -50,23 +58,30 @@ public class NewsService {
         }
 
         public NewsDetailDto getNewsDetail(Long newsId, Long userId) {
-                // 1) News 엔티티 조회
                 News news = newsRepository.findById(newsId)
                         .orElseThrow(() -> new RuntimeException("해당 뉴스가 존재하지 않습니다."));
 
-                // 2) 댓글, 좋아요가 아직 구현되지 않았다면, 일단 빈 값으로 세팅
-                //    -> 댓글/좋아요 기능 구현 시 DB에서 조회한 값으로 채우면 됨
-
-                // 예시 DTO를 만들어서 반환 (NewsDetailDto 등)
-                return NewsDetailDto.builder()
+                // 작성자 정보 포함된 NewsData 구성
+                NewsDetailDto.NewsData newsData = NewsDetailDto.NewsData.builder()
                         .title(news.getTitle())
                         .content(news.getContent())
                         .createdAt(news.getCreatedAt())
                         .newsTime(news.getNewsTime())
-                        .comments(Collections.emptyList())  // 댓글 기능 미구현 시 빈 리스트
-                        .likes(0)                          // 좋아요 기능 미구현 시 0
+                        .build();
+
+                // 댓글 리스트 가져오기
+                List<CommentResponseDTO> comments = commentService.getCommentTree(newsId);
+
+                // 좋아요 수 세기
+                int likeCount = newsLikeRepository.countByNews(news);
+
+                return NewsDetailDto.builder()
+                        .newsData(newsData)
+                        .comments(comments)
+                        .likes(likeCount)
                         .build();
         }
+
 
 
         private LocalDateTime parseDateTime(String dateStr) {
@@ -80,5 +95,41 @@ public class NewsService {
                 } catch (Exception e) {
                         return LocalDateTime.now();
                 }
+        }
+
+        // 좋아요 추가
+        public void likeNews(Long newsId, Long userId) {
+                News news = newsRepository.findById(newsId)
+                        .orElseThrow(() -> new RuntimeException("뉴스 없음"));
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("유저 없음"));
+
+                // 중복 좋아요 방지
+                if (newsLikeRepository.existsByNewsAndUser(news, user)) {
+                        throw new RuntimeException("이미 좋아요를 눌렀습니다.");
+                }
+
+                NewsLike like = NewsLike.builder()
+                        .news(news)
+                        .user(user)
+                        .createdAt(LocalDateTime.now())
+                        .build();
+
+                newsLikeRepository.save(like);
+        }
+
+        // 좋아요 취소
+        public void unlikeNews(Long newsId, Long userId) {
+                News news = newsRepository.findById(newsId)
+                        .orElseThrow(() -> new RuntimeException("뉴스 없음"));
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("유저 없음"));
+
+                newsLikeRepository.deleteByNewsAndUser(news, user);
+        }
+
+        // 좋아요 수 조회
+        public int getLikeCount(News news) {
+                return newsLikeRepository.countByNews(news);
         }
 }
