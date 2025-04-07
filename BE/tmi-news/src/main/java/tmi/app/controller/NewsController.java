@@ -131,5 +131,25 @@ public class NewsController {
     return ResponseEntity.ok(responseData);
   }
 
+  @PostMapping("/{newsId}/likes")
+  public ResponseEntity<Void> likeNews(@PathVariable Long newsId,
+                                       @RequestHeader("Authorization") String bearerToken) {
+    String token = bearerToken.replace("Bearer ", "");
+    Long userId = jwtProvider.extractUserId(token);
+
+    newsService.likeNews(newsId, userId);
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/{newsId}/likes")
+  public ResponseEntity<Void> unlikeNews(@PathVariable Long newsId,
+                                         @RequestHeader("Authorization") String bearerToken) {
+    String token = bearerToken.replace("Bearer ", "");
+    Long userId = jwtProvider.extractUserId(token);
+
+    newsService.unlikeNews(newsId, userId);
+    return ResponseEntity.ok().build();
+  }
+
 
 }
