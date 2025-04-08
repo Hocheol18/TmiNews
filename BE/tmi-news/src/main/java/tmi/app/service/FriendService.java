@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import tmi.app.dto.FriendDto;
+import tmi.app.dto.UserSearchDto;
 import tmi.app.entity.FriendRequest;
 import tmi.app.entity.Friendship;
 import tmi.app.entity.User;
@@ -109,5 +110,16 @@ public class FriendService {
         friendshipRepository.deleteByUserUserIdAndFriendUserId(userId, friendId);
         friendshipRepository.deleteByUserUserIdAndFriendUserId(friendId, userId);
     }
+
+    @Transactional(readOnly = true)
+    public List<UserSearchDto> searchMyFriends(Long userId, String keyword) {
+        return friendshipRepository.searchFriendsByNickname(userId, keyword).stream()
+                .map(friendship -> {
+                    User friend = friendship.getFriend();
+                    return new UserSearchDto(friend.getUserId(), friend.getNickname(), friend.getProfileImage());
+                })
+                .toList();
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package tmi.app.controller;
 
+import org.springframework.core.ParameterizedTypeReference;
 import tmi.app.dto.NewsPreviewRequest;
 import tmi.app.dto.NewsPreviewResponse;
 import tmi.app.dto.NewsRegisterRequest;
@@ -76,7 +77,7 @@ public class NewsController {
             "content", request.getContent(),
             "category", request.getCategory()))
         .retrieve()
-        .bodyToMono(Map.class)
+            .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
         .block();
 
     logger.info("AI 서버 응답: {}", aiResponse);

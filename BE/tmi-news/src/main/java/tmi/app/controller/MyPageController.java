@@ -17,10 +17,13 @@ public class MyPageController {
     private final UserService userService;
 
     @GetMapping
-    public MyPageResponse getMyPage(@RequestHeader("Authorization") String bearerToken) {
+    public MyPageResponse getMyPage(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam(required = false, defaultValue = "recent") String sortBy) {
+
         String token = bearerToken.replace("Bearer ", "");
         Long userId = jwtProvider.extractUserId(token);
 
-        return userService.getMyPage(userId);
+        return userService.getMyPage(userId, sortBy);
     }
 }

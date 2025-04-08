@@ -12,6 +12,7 @@ import java.util.List;
 public class MyPageResponse {
 
     private UserInfo user;
+    private int friendCount;
     private List<NewsDto> newsList;
 
     @Getter
