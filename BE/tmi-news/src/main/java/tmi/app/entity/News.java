@@ -39,7 +39,7 @@ public class News {
 
     private LocalDateTime newsTime; // 기사 날짜
 
-    // ✅ 댓글 리스트 추가
+    //댓글 리스트 추가
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 

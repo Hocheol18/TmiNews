@@ -18,7 +18,7 @@ public class UserController {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
-    private final UserService userService; // ✅ 추가!
+    private final UserService userService;
 
     @GetMapping("/me")
     public Map<String, Object> getMyInfo(@RequestHeader("Authorization") String bearerToken) {

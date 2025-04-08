@@ -21,19 +21,19 @@ public class UserService {
     private final NewsRepository newsRepository;
     private final FriendshipRepository friendshipRepository;
 
-    // 🔹 내 마이페이지 조회
+    // 내 마이페이지 조회
     @Transactional(readOnly = true)
     public MyPageResponse getMyPage(Long userId, String sortBy) {
         return buildMyPageResponse(userId, sortBy);
     }
 
-    // 🔹 친구 마이페이지 조회
+    // 친구 마이페이지 조회
     @Transactional(readOnly = true)
     public MyPageResponse getFriendPage(Long friendId, String sortBy) {
         return buildMyPageResponse(friendId, sortBy);
     }
 
-    // ✅ 공통 로직 추출 (정렬 & 친구 수 포함)
+    // 공통 로직 추출 (정렬 & 친구 수 포함)
     private MyPageResponse buildMyPageResponse(Long userId, String sortBy) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
@@ -61,7 +61,7 @@ public class UserService {
 
     }
 
-    // 🔍 유저 검색
+    // 유저 검색
     @Transactional(readOnly = true)
     public List<UserSearchDto> searchUsers(String keyword, Long currentUserId) {
         return userRepository.findByNicknameContainingIgnoreCaseAndUserIdNot(keyword, currentUserId).stream()
