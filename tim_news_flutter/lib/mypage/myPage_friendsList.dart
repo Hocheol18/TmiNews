@@ -1,15 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/mypage/myPage_newFriend.dart';
+import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
+import 'package:tim_news_flutter/mypage/mypage_friendProfile.dart';
+import './mypage_class.dart';
 
+// todo: 친구 있을 때 테스트 다시 해봐야 함
+// check: 프로필 이미지 없으면 어떻게 나오는지
 class MypageFriendList extends ConsumerStatefulWidget {
-  const MypageFriendList({super.key});
-
+  const MypageFriendList({super.key, this.userName});
+  final userName;
   @override
   ConsumerState<MypageFriendList> createState() => _MypageFriendListState();
 }
 
 class _MypageFriendListState extends ConsumerState<MypageFriendList> {
+  List<FriendInfo>? FriendList;
+  bool isLoading = true;
+  String? error;
+  String searchKeyword = '';
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchFriendList();
+    });
+  }
+
+  Future<void> _fetchFriendList() async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(mypageApiServiceProvider);
+      final result = await apiService.getFriendList();
+
+      // 결과 처리
+      if (result.isSuccess) {
+        setState(() {
+          FriendList = result.value;
+          isLoading = false;
+        });
+        print("친구 리스트: ${result.value}");
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
+  Future<void> _searchFriend(keyword) async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(mypageApiServiceProvider);
+      final result = await apiService.searchMyFriend(keyword);
+
+      // 결과 처리
+      if (result.isSuccess) {
+        setState(() {
+          FriendList = result.value;
+          isLoading = false;
+        });
+        print("검색 결과: ${result.value}");
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +113,15 @@ class _MypageFriendListState extends ConsumerState<MypageFriendList> {
           Padding(
             padding: EdgeInsets.fromLTRB(20, 25, 20, 25),
             child: TextField(
+              onChanged: (value) {
+                searchKeyword = value;
+              },
               decoration: InputDecoration(
                 hintText: '내 친구 검색',
                 suffixIcon: IconButton(
-                    onPressed: (){},
+                    onPressed: () {
+                      _searchFriend(searchKeyword);
+                    },
                     icon: Icon(Icons.search)
                 ),
                 border: OutlineInputBorder(
@@ -68,7 +162,7 @@ class _MypageFriendListState extends ConsumerState<MypageFriendList> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '사용자님의 친구(000명)',
+                '${widget.userName}님의 친구(000명)',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22
@@ -76,11 +170,28 @@ class _MypageFriendListState extends ConsumerState<MypageFriendList> {
               ),
             ),
           ),
-          Expanded(
+          isLoading == true
+              ? Expanded(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: ListView.separated(
-                  itemCount: 30,
+              padding: const EdgeInsets.all(20.0),
+              child: Text('로딩중'),
+            ),
+          )
+              : Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+              child: FriendList == null
+                  ? Text(
+                '데이터를 불러오는데 실패했습니다.',
+                style: TextStyle(fontSize: 20, color: Colors.grey),
+              )
+                  : FriendList?.length == 0
+                  ? Text(
+                '친구가 없습니다.',
+                style: TextStyle(fontSize: 20, color: Colors.grey),
+              )
+                  : ListView.separated(
+                  itemCount: FriendList!.length,
                   separatorBuilder: (context, index) {
                     return Divider(
                       height: 1,
@@ -89,21 +200,31 @@ class _MypageFriendListState extends ConsumerState<MypageFriendList> {
                     );
                   },
                   itemBuilder: (c, i) {
-                    return Container(
-                      width: double.infinity,
-                      height: 85,
-                      child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundImage: AssetImage('assets/images/kakao_login.png'),
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(
-                              child: Text('친구이름', style: TextStyle(fontSize: 20)),
-                            ),
-                          ],
-                        ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => FriendProfile(
+                              friendId: FriendList![i].userId
+                          )),
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 85,
+                        child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage: NetworkImage(FriendList![i].profileImage),
+                              ),
+                              SizedBox(width: 20),
+                              Expanded(
+                                child: Text(FriendList![i].nickname, style: TextStyle(fontSize: 20)),
+                              ),
+                            ],
+                          ),
+                      ),
                     );
                   }),
             ),

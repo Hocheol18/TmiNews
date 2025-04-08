@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tim_news_flutter/mypage/myPage_friendsList.dart';
-import 'package:tim_news_flutter/mypage/myPage_notification.dart';
 import 'package:tim_news_flutter/common/articleBlock.dart';
 import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
 import './mypage_class.dart';
 
-// todo: 글 들어오면 테스트, 전체 친구 수
-class MypageMain extends ConsumerStatefulWidget {
-  const MypageMain({super.key});
+// 친구 마이페이지 조회
+class FriendProfile extends ConsumerStatefulWidget {
+  const FriendProfile({super.key, this.friendId});
+  final friendId;
 
   @override
-  ConsumerState<MypageMain> createState() => _MypageMainState();
+  ConsumerState<FriendProfile> createState() => _FriendProfileState();
 }
 
-class _MypageMainState extends ConsumerState<MypageMain> {
+class _FriendProfileState extends ConsumerState<FriendProfile> {
   UserInfo ? userProfileData;
   bool isLoading = true;
   String? error;
   String sortType = 'recent';
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchUserProfile();
     });
@@ -37,7 +36,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
       });
 
       final apiService = ref.read(mypageApiServiceProvider);
-      final result = await apiService.getUserProfile(sortType);
+      final result = await apiService.getFriendProfile(widget.friendId, sortType);
 
       if (result.isSuccess) {
         final userInfo = UserInfo.fromJson(result.value);
@@ -47,7 +46,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
           isLoading = false;
         });
 
-        print("프로필 데이터: ${userInfo.user.nickname} ${userInfo.user.profileImage} ${userInfo.newsList}");
+        print("친구 프로필 데이터: ${userInfo.user.nickname} ${userInfo.user.profileImage} ${userInfo.newsList}");
       } else {
         setState(() {
           error = result.error.toString();
@@ -80,20 +79,14 @@ class _MypageMainState extends ConsumerState<MypageMain> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('마이페이지', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+        title: Text(
+          userProfileData != null
+          ? '친구의 마이페이지'
+          : '${userProfileData!.user.nickname}님의 페이지',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold
+          ),),
         backgroundColor: Color(0xffFFD43A),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyPageNotification()),
-              );
-            },
-          )
-        ],
+        centerTitle: true
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
@@ -112,39 +105,29 @@ class _MypageMainState extends ConsumerState<MypageMain> {
               child: Row(
                 children: [
                   Expanded(
-                    flex: 1,
-                    child: CircleAvatar(
-                      radius: 75,
-                      backgroundImage: userProfileData?.user.profileImage != null
-                          ? NetworkImage(userProfileData!.user.profileImage)
-                          : AssetImage('assets/images/UserImage.png') as ImageProvider,
-                    )
+                      flex: 1,
+                      child: CircleAvatar(
+                        radius: 75,
+                        backgroundImage: userProfileData?.user.profileImage != null
+                            ? NetworkImage(userProfileData!.user.profileImage)
+                            : AssetImage('assets/images/UserImage.png') as ImageProvider,
+                      )
                   ),
                   Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => MypageFriendList(
-                              userName: userProfileData?.user.nickname ?? '사용자'
-                            )),
-                          );
-                        },
-                        child: Column(
-                          children: [
-                            Text('친구', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                            Text('000 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
-                          ],
-                        ),
-                      )
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        Text('친구', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                        Text('000 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             userProfileData != null
-            ? ContentList(newsData: userProfileData?.newsList, toggleSort:toggleSort)
-            : Text('로딩중입니다.')
+                ? ContentList(newsData: userProfileData?.newsList, toggleSort:toggleSort)
+                : Text('로딩중입니다.')
           ],
         ),
       ),
@@ -175,20 +158,20 @@ class _ContentListState extends State<ContentList> {
               Flexible(
                 flex: 1,
                 child: Row(
-                  children: [
-                    Radio(
-                      value: '최신순',
-                      groupValue: selected,
-                      onChanged: (String ? value){
-                        setState(() {
-                          selected = '최신순';
-                        });
-                        widget.toggleSort();
-                      },
-                      activeColor: Color(0xffFFD43A),
-                    ),
-                    Text('최신순'),
-                  ]
+                    children: [
+                      Radio(
+                        value: '최신순',
+                        groupValue: selected,
+                        onChanged: (String ? value){
+                          setState(() {
+                            selected = '최신순';
+                          });
+                          widget.toggleSort();
+                        },
+                        activeColor: Color(0xffFFD43A),
+                      ),
+                      Text('최신순'),
+                    ]
                 ),
               ),
               Flexible(
@@ -213,8 +196,8 @@ class _ContentListState extends State<ContentList> {
             ],
           ),
           widget.newsData.length == 0
-          ? Text('아직 작성한 글이 없습니다.')
-          : Expanded(
+              ? Text('아직 작성한 글이 없습니다.')
+              : Expanded(
             // 3 * n의 타일로 글 보여주기
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
