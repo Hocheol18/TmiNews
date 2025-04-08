@@ -3,12 +3,12 @@ import 'dart:math' as math;
 
 
 // 글 블록, 색은 4가지 중 랜덤으로
-// content에 내용, link에 연결된 링크 담아서 보내면 됩니다.
+// content에 내용, news_id에 아이디 넣어주세요
 // todo: 눌렀을 때, 해당 글 링크로 보내줄 예정
 class ArticleBlock extends StatelessWidget {
-  const ArticleBlock({super.key, this.content, this.link});
+  const ArticleBlock({super.key, this.content, this.news_id});
   final content;
-  final link;
+  final news_id;
 
   @override
   Widget build(BuildContext context) {
