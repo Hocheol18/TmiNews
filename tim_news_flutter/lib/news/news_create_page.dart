@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:tim_news_flutter/theme/colors.dart';
-
 import '../theme/news_create_page_styles.dart';
 import 'calendar/calendar.dart';
 import 'image/image_picker.dart';
+import 'providers/news_provider.dart';
 
-class NewsCreatePage extends StatelessWidget {
+class NewsCreatePage extends ConsumerWidget {
   const NewsCreatePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -27,40 +29,54 @@ class NewsCreatePage extends StatelessWidget {
   }
 }
 
-class News_create extends StatefulWidget {
-  News_create({super.key});
+//TODO :: 유효성 검사 해야함.
+
+class News_create extends ConsumerStatefulWidget {
+  const News_create({super.key});
 
   @override
-  State<News_create> createState() => _News_createState();
+  ConsumerState<News_create> createState() => _News_createState();
 }
 
-class _News_createState extends State<News_create> {
-  final menuItems = ['재테크', 'IT', '건강', '사회', '연애', '스포츠'];
-
+class _News_createState extends ConsumerState<News_create> {
+  final menuItems = ['재테크', 'IT', '건강', '사회', '연예', '스포츠'];
   final ScrollController _scrollController = ScrollController();
-
-  final TextEditingController _editingController = TextEditingController();
-
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
   final int textLength = 10;
+  String selectedCategory = '재테크';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final newsData = ref.read(newsProvider);
+      _titleController.text = newsData.title;
+      _contentController.text = newsData.content;
+      selectedCategory = newsData.category;
+    });
+  }
 
   @override
   void dispose() {
-    _editingController.dispose();
+    _titleController.dispose();
+    _contentController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   String? checkErrorText() {
-    if (_editingController.text.isEmpty) return null;
-    return _editingController.text.length >= textLength
+    if (_contentController.text.isEmpty) return null;
+    return _contentController.text.length >= textLength
         ? null
         : "10글자 이상 입력해주세요.";
   }
 
-  String selectedDate = '날짜를 선택하세요';
-
   @override
   Widget build(BuildContext context) {
+    final newsNotifier = ref.read(newsProvider.notifier);
+    final newsData = ref.watch(newsProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,14 +85,34 @@ class _News_createState extends State<News_create> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('기사 분류 *', style: titleTextStyle),
+                Text('기사 분류', style: titleTextStyle),
                 Container(
                   padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children:
                         menuItems
-                            .map((item) => Text(item, style: menuTextStyle))
+                            .map(
+                              (item) => GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedCategory = item;
+                                  });
+                                  newsNotifier.setCategory(item);
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        selectedCategory == item
+                                            ? yellowColor
+                                            : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(item, style: menuTextStyle),
+                                ),
+                              ),
+                            )
                             .toList(),
                   ),
                 ),
@@ -86,6 +122,7 @@ class _News_createState extends State<News_create> {
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                   child: TextFormField(
+                    controller: _titleController,
                     textAlignVertical: TextAlignVertical.top,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(5),
@@ -99,6 +136,9 @@ class _News_createState extends State<News_create> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
+                    onChanged: (value) {
+                      newsNotifier.setTitle(value);
+                    },
                   ),
                 ),
                 SizedBox(height: 20),
@@ -113,10 +153,7 @@ class _News_createState extends State<News_create> {
                     ).then((value) {
                       // 날짜가 선택되어 반환되었을 때 처리
                       if (value != null) {
-                        setState(() {
-                          selectedDate =
-                              value.toString(); // 반환된 날짜 형식에 맞게 조정 필요
-                        });
+                        newsNotifier.setDate(value);
                       }
                     });
                   },
@@ -130,14 +167,14 @@ class _News_createState extends State<News_create> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(selectedDate, style: TextStyle(fontSize: 16)),
+                        Text(DateFormat('yyyy-MM-dd').format(newsData.date), style: TextStyle(fontSize: 16)),
                         Icon(Icons.calendar_today, size: 20),
                       ],
                     ),
                   ),
                 ),
                 SizedBox(height: 25),
-                Text('기사 내용 *', style: titleTextStyle),
+                Text('기사 내용', style: titleTextStyle),
                 Scrollbar(
                   controller: _scrollController,
                   child: Container(
@@ -146,7 +183,7 @@ class _News_createState extends State<News_create> {
                     padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                     child: TextFormField(
                       scrollController: _scrollController,
-                      controller: _editingController,
+                      controller: _contentController,
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
@@ -172,18 +209,12 @@ class _News_createState extends State<News_create> {
                         ),
                         errorMaxLines: 1,
                       ),
-                      autovalidateMode: AutovalidateMode.always,
-                      onFieldSubmitted: (value) {
-                        print('submit $value');
-                      },
                       onChanged: (value) {
-                        setState(() {});
-                        print("setState $value");
+                        newsNotifier.setContent(value);
                       },
-                      validator: (value) {
-                        print("validator $value");
-                      },
+                      autovalidateMode: AutovalidateMode.always,
                     ),
+
                   ),
                 ),
                 SizedBox(height: 20),
