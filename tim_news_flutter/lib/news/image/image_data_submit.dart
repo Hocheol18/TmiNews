@@ -17,3 +17,16 @@ Future<Response> newsCreateSubmit(WidgetRef ref, String category, String content
 
   return await newsFunction.newsCreate(data);
 }
+
+Future<Response> newsCreatePostSubmit(WidgetRef ref, String category, String content, String title, String date) async {
+  final newsFunction = ref.read(newsCreateRepositoryProvider);
+  
+  final Map<String, String> data = {
+    "title": title,
+    "content": content,
+    "category": category,
+    "newsTime": date.substring(0, 10)
+  };
+
+  return await newsFunction.newsCreatePost(data);
+}

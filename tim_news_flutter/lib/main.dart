@@ -5,7 +5,6 @@ import 'package:tim_news_flutter/screens/mainPage.dart';
 import 'package:tim_news_flutter/screens/myPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'news/news_create_completion.dart';
 import 'news/news_create_page.dart';
 
 Future<void> main() async {
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         '/main': (context) => MainPage(),
         '/create': (context) => NewsCreatePage(),
         '/mypage': (context) => MyPage(),
-        '/test': (context) => NewsCreateCompletion(),
+        '/test': (context) => MyPage(),
       },
     );
   }

@@ -141,9 +141,11 @@ class _ImageAddState extends ConsumerState<ImageAdd> {
                         news_data.date,
                       );
 
+                      //TODO :: 백엔드 코드 status 보고 오류날 경우 다시 원복하게 만들 것
+
                       // 성공 시 다이얼로그 닫고 다음 화면으로 이동
-                      Navigator.pop(context); // 로딩 다이얼로그 닫기
-                      Navigator.pushAndRemoveUntil(
+                      Navigator.pop(context); // 로딩 다이얼로그닫기
+                      Navigator .pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (_) => NewsCreateCompletion(res : res),
@@ -155,7 +157,7 @@ class _ImageAddState extends ConsumerState<ImageAdd> {
                       Navigator.pop(context); // 로딩 다이얼로그 닫기
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('발행 중 오류가 발생했습니다: ${e.toString()}'),
+                          content: Text('발행 중 오류가 발생했습니다'),
                         ),
                       );
                     }

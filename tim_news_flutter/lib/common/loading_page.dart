@@ -18,11 +18,17 @@ class _LoadingPageState extends State<LoadingPage> {
           decoration: BoxDecoration(
             color: yellowColor,
             borderRadius: BorderRadius.circular(20),
-
           ),
         );
       },
     );
-    return Scaffold(body: Center(child: spinkit));
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [spinkit, SizedBox(height: 10,), Text('뉴스를 생성중입니다...')],
+        ),
+      ),
+    );
   }
 }
