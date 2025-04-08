@@ -29,6 +29,8 @@ class NewsCreatePage extends ConsumerWidget {
   }
 }
 
+//TODO :: 유효성 검사 해야함.
+
 class News_create extends ConsumerStatefulWidget {
   const News_create({super.key});
 
