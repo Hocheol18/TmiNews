@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '내 앱',
-      initialRoute: '/create',
+      initialRoute: '/login',
       routes: {
         '/login': (context) => LoginPage(),
         '/main': (context) => MainPage(),

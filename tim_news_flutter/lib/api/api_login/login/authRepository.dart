@@ -58,12 +58,10 @@ class AuthRepository {
 
   Future<void> kakaoLogout() async {
     final String? refreshToken = await storage.readRefreshToken();
-    final String? accessToken = await storage.readAccessToken();
 
     await dio.post(
       'http://${dotenv.env['LOCAL_API_URL']}/auth/logout',
       options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
-
     );
   }
 

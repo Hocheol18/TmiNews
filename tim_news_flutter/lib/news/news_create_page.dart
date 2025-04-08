@@ -37,7 +37,7 @@ class News_create extends ConsumerStatefulWidget {
 }
 
 class _News_createState extends ConsumerState<News_create> {
-  final menuItems = ['재테크', 'IT', '건강', '사회', '연애', '스포츠'];
+  final menuItems = ['재테크', 'IT', '건강', '사회', '연예', '스포츠'];
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();

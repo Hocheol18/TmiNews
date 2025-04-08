@@ -1,0 +1,21 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../api/api_news_create/news_create/news_create.dart';
+
+
+Future<void> newsCreateSubmit(WidgetRef ref, String category, String content, String title, File? images, DateTime date) async {
+  final newsFunction = ref.read(newsCreateRepositoryProvider);
+
+  final Map<String, dynamic> data = {
+    "title": title,
+    "content": content,
+    "category": category,
+    "news_time": "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}"
+  };
+
+  Response res = await newsFunction.newsCreate(data);
+  print(res);
+
+}

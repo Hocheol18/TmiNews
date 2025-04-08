@@ -8,6 +8,8 @@ import 'dart:io';
 
 import 'package:tim_news_flutter/theme/colors.dart';
 
+import 'image_data_submit.dart';
+
 class ImageAdd extends ConsumerStatefulWidget {
   final File? image; // Add this property
   const ImageAdd({super.key, this.image}); // Update constructor
@@ -107,11 +109,7 @@ class _ImageAddState extends ConsumerState<ImageAdd> {
                     ),
                   ),
                   onPressed: () {
-                    print(news_data.date);
-                    print(news_data.category);
-                    print(news_data.content);
-                    print(news_data.title);
-                    print(news_data.images);
+                    newsCreateSubmit(ref, news_data.category, news_data.content, news_data.title, news_data.images, news_data.date);
                   },
                   child: Text(
                     '발행하기',
