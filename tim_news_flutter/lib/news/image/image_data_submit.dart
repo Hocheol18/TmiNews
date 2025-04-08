@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../api/api_news_create/news_create/news_create.dart';
 
 
-Future<void> newsCreateSubmit(WidgetRef ref, String category, String content, String title, File? images, DateTime date) async {
+Future<Response> newsCreateSubmit(WidgetRef ref, String category, String content, String title, File? images, DateTime date) async {
   final newsFunction = ref.read(newsCreateRepositoryProvider);
 
   final Map<String, dynamic> data = {
@@ -15,7 +15,5 @@ Future<void> newsCreateSubmit(WidgetRef ref, String category, String content, St
     "news_time": "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}"
   };
 
-  Response res = await newsFunction.newsCreate(data);
-  print(res);
-
+  return await newsFunction.newsCreate(data);
 }

@@ -22,11 +22,11 @@ class BottomNavigator extends StatelessWidget {
         ],
         onTap: (int index) {
           if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/create');
+            Navigator.pushNamed(context, '/create');
           } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/main');
+            Navigator.pushNamed(context, '/main');
           } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/mypage');
+            Navigator.pushNamed(context, '/mypage');
           }
         },
       ),

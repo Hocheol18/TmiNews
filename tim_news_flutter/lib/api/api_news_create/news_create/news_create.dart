@@ -21,11 +21,25 @@ class NewsCreateRepository {
   final SecureStorage storage;
 
   Future<Response> newsCreate(Map<String, dynamic> code) async {
-    print(code);
     final String? accessToken = await storage.readAccessToken();
 
     return await dio.post(
       'http://${dotenv.env['LOCAL_API_URL']}/news/preview',
+      data: code,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+  }
+
+  Future<Response> newsCreatePost(Map<String, dynamic> code) async {
+    final String? accessToken = await storage.readAccessToken();
+
+    return await dio.post(
+      'http://${dotenv.env['LOCAL_API_URL']}/news',
       data: code,
       options: Options(
         headers: {
