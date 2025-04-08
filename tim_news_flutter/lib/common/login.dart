@@ -44,15 +44,12 @@ Future<bool> loginLogic(BuildContext context, WidgetRef ref) async {
         await apiService.apiPost(serverUri, authCode);
         return true;
       } catch (error) {
-        print("1");
-        // 토큰이 유효하지 않거나 만료된 경우
-        // 아래 로그인 로직으로 계속 진행
+        print(error);
       }
     }
 
     // 토큰이 없거나 유효하지 않은 경우 로그인 시도
     try {
-      print("2");
       // 카카오톡 앱이 설치되어 있는지 확인
       if (await isKakaoTalkInstalled()) {
         try {
