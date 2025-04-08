@@ -1,13 +1,13 @@
 from langchain.chat_models.base import BaseChatModel
+from pydantic import Field
 from langchain.schema import ChatResult, AIMessage, ChatGeneration, BaseMessage
 from typing import List, Optional
 import requests
 
 class UpstageChatLLM(BaseChatModel):
-    def __init__(self, api_token: str, model: str = "solar-pro", api_url: str = "https://api.upstage.ai/v1/chat/completions"):
-        self.api_token = api_token
-        self.model = model
-        self.api_url = api_url
+    api_token: str = Field(...)
+    model: str = "solar-pro"
+    api_url: str = "https://api.upstage.ai/v1/chat/completions"
 
     def _generate(self, messages: List[BaseMessage], stop: Optional[List[str]] = None, **kwargs) -> ChatResult:
         headers = {
