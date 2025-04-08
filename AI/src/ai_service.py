@@ -1,38 +1,140 @@
 from flask import Flask, request, jsonify
-import json
-import requests
 import os
+import json
 import logging
 from dotenv import load_dotenv
+from upstage_chat_llm import UpstageChatLLM
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
-# 로깅 설정
+# 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# .env 파일 로드 (프로젝트 루트에 위치)
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
+UPSTAGE_API_TOKEN = os.environ.get("UPSTAGE_API_TOKEN")
 
-UPSTAGE_API_URL = "https://api.upstage.ai/v1/chat/completions"
-UPSTAGE_API_TOKEN = os.environ.get("UPSTAGE_API_TOKEN", "UPSTAGE_TOKEN")
+# Upstage LLM
+llm = UpstageChatLLM(api_token=UPSTAGE_API_TOKEN, model="solar-pro")
 
-def build_prompt(title: str, content: str, category: str, min_title_words: int = 10, min_content_words: int = 200) -> str:
-    """
-    뉴스 기사 스타일의 제목과 본문 생성을 위한 프롬프트를 구성합니다.
-    최소 제목 단어 수와 본문 단어 수 조건을 포함시킬 수 있습니다.
-    """
-    prompt = (
-        f"카테고리: {category}\n"
-        f"제목: {title}\n"
-        f"내용: {content}\n"
-        "위 내용을 기반으로 뉴스 기사 스타일의 제목과 본문을 생성해줘. "
-        f"제목은 최소 {min_title_words}단어 이상, 본문은 최소 {min_content_words}단어 이상 작성해줘. "
-        "응답은 JSON 형식으로 {\"generated_title\": \"...\", \"generated_content\": \"...\"} 형태로 해줘."
-    )
-    return prompt
+# 카테고리별 프롬프트 템플릿
+it_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 IT 전문 기자야. 기술, 트렌드, 신제품 소식 등을 전문적인 문체로 써줘.
 
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+entertainment_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 디스패치 스타일의 연예 기자야. 독점 보도, 목격담, 연애설, 열애설, 논란 중심의 자극적이고 눈에 띄는 기사 문체로 작성해줘.
+
+- 제목은 눈길을 끄는 헤드라인 스타일로 작성하고,
+- 본문은 목격자 언급, 관계자의 말, 'A씨', 'B양' 같은 표현도 사용해도 돼.
+- 가십 느낌을 살리되, 너무 자극적이거나 허위 사실은 피하고 자연스럽게 꾸며줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. 아래 형식으로 JSON 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+
+sports_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 스포츠 전문 기자야. 경기 요약, 선수 평가, 통계 등을 중심으로 역동적인 문체로 써줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+society_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 사회 전문 기자야. 사회적 이슈, 사건 사고를 객관적이고 중립적인 문체로 다뤄줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+health_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 건강 전문 기자야. 의학 정보, 건강 팁, 생활 습관 관련 내용을 신뢰감 있게 써줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+finance_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 재테크 전문 기자야. 투자, 절세, 금융 팁 등을 전문적인 용어와 분석으로 써줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+default_prompt = PromptTemplate(
+    input_variables=["title", "content"],
+    template="""
+너는 뉴스 기사 작가야. 일반적인 문체로 제목과 본문을 작성해줘.
+
+제목: {title}
+내용: {content}
+
+제목은 10단어 이상, 본문은 200단어 이상. JSON으로 응답:
+{{"generated_title": "...", "generated_content": "..."}}
+"""
+)
+
+# 카테고리 기반 프롬프트 선택 함수
+def get_chain_by_category(category: str, llm):
+    category = category.strip().lower()
+    if category == "it":
+        return LLMChain(llm=llm, prompt=it_prompt)
+    elif category == "연예":
+        return LLMChain(llm=llm, prompt=entertainment_prompt)
+    elif category == "스포츠":
+        return LLMChain(llm=llm, prompt=sports_prompt)
+    elif category == "사회":
+        return LLMChain(llm=llm, prompt=society_prompt)
+    elif category == "건강":
+        return LLMChain(llm=llm, prompt=health_prompt)
+    elif category == "재테크":
+        return LLMChain(llm=llm, prompt=finance_prompt)
+    else:
+        return LLMChain(llm=llm, prompt=default_prompt)
+
+# 생성 API
 @app.route("/generate", methods=["POST"])
 def generate():
     try:
@@ -41,7 +143,6 @@ def generate():
         logger.error(f"JSON 파싱 에러: {e}")
         return jsonify({"error": "유효한 JSON 데이터를 전송해주세요."}), 400
 
-    # 기본값 처리 및 데이터 검증
     title = data.get("title", "").strip()
     content = data.get("content", "").strip()
     category = data.get("category", "").strip()
@@ -49,47 +150,19 @@ def generate():
     if not title or not content or not category:
         return jsonify({"error": "title, content, category 값은 필수입니다."}), 400
 
-    # 프롬프트 생성 (필요에 따라 최소 길이 조건 조정)
-    prompt_text = build_prompt(title, content, category)
-
-    headers = {
-        "Authorization": f"Bearer {UPSTAGE_API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": "solar-pro",  # 사용할 모델 이름
-        "messages": [
-            {
-                "role": "user",
-                "content": prompt_text
-            }
-        ]
-    }
-    
     try:
-        response = requests.post(UPSTAGE_API_URL, json=payload, headers=headers, timeout=10)
-    except requests.exceptions.RequestException as e:
-        logger.error(f"API 요청 실패: {e}")
-        return jsonify({"error": "AI 서비스 요청에 실패했습니다."}), 500
-
-    if response.status_code == 200:
-        try:
-            resp_data = response.json()
-            # Upstage 응답에서 choices[0].message.content에 JSON 문자열이 담겨있다고 가정
-            choice = resp_data.get("choices", [])[0]
-            message = choice.get("message", {})
-            content_str = message.get("content", "")
-            result = json.loads(content_str)
-            generated_title = result.get("generated_title", "AI 제목 생성 실패")
-            generated_content = result.get("generated_content", "AI 본문 생성 실패")
-        except Exception as e:
-            logger.error(f"응답 파싱 에러: {e}")
-            generated_title = "[ERROR] 파싱 실패"
-            generated_content = f"응답 파싱 중 오류 발생: {str(e)}"
-    else:
-        logger.error(f"AI 생성 실패 - Status Code: {response.status_code}, Response: {response.text}")
-        generated_title = "[ERROR] AI 생성 실패"
-        generated_content = f"Status Code: {response.status_code}, {response.text}"
+        chain = get_chain_by_category(category, llm)
+        output = chain.run({
+            "title": title,
+            "content": content
+        })
+        result = json.loads(output)
+        generated_title = result.get("generated_title", "AI 제목 생성 실패")
+        generated_content = result.get("generated_content", "AI 본문 생성 실패")
+    except Exception as e:
+        logger.error(f"AI 생성 실패 또는 파싱 오류: {e}")
+        generated_title = "[ERROR] 처리 실패"
+        generated_content = f"오류: {str(e)}"
 
     return jsonify({
         "generated_title": generated_title,
