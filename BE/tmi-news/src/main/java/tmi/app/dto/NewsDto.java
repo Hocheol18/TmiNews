@@ -9,4 +9,5 @@ public class NewsDto {
     private Long newsId;
     private String title;
     private String content;
+    private int commentCount;
 }

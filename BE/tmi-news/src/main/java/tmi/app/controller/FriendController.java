@@ -8,6 +8,7 @@ import tmi.app.security.JwtProvider;
 import tmi.app.service.FriendService;
 import tmi.app.dto.MyPageResponse;
 import tmi.app.service.UserService;
+import tmi.app.dto.UserSearchDto;
 
 
 import java.util.List;
@@ -89,15 +90,28 @@ public class FriendController {
     // 친구 마이페이지 조회
     @GetMapping("/{friendId}/mypage")
     public ResponseEntity<MyPageResponse> getFriendPage(
-            @PathVariable Long friendId) {
+            @PathVariable Long friendId,
+            @RequestParam(required = false, defaultValue = "recent") String sortBy) {
 
-        MyPageResponse response = userService.getFriendPage(friendId);
+        MyPageResponse response = userService.getFriendPage(friendId, sortBy);
         return ResponseEntity.ok(response);
     }
+
 
     // JWT에서 userId 추출하는 공통 메서드
     private Long extractUserIdFromHeader(String bearerToken) {
         String token = bearerToken.replace("Bearer ", "");
         return jwtProvider.extractUserId(token);
     }
+
+    // 내 친구 중 닉네임 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<UserSearchDto>> searchMyFriends(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam String keyword) {
+
+        Long userId = extractUserIdFromHeader(bearerToken);
+        return ResponseEntity.ok(friendService.searchMyFriends(userId, keyword));
+    }
+
 }

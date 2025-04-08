@@ -2,10 +2,13 @@ package tmi.app.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import tmi.app.dto.UserSearchDto;
 import tmi.app.entity.User;
 import tmi.app.repository.UserRepository;
 import tmi.app.security.JwtProvider;
+import tmi.app.service.UserService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -15,16 +18,12 @@ public class UserController {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
+    private final UserService userService; // ✅ 추가!
 
     @GetMapping("/me")
     public Map<String, Object> getMyInfo(@RequestHeader("Authorization") String bearerToken) {
-        // "Bearer {token}" 형식에서 "Bearer " 제거
         String token = bearerToken.replace("Bearer ", "");
-
-        // JWT에서 userId 추출
         Long userId = jwtProvider.extractUserId(token);
-
-        // DB에서 사용자 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
@@ -33,5 +32,17 @@ public class UserController {
                 "profileImage", user.getProfileImage(),
                 "oauthId", user.getOauthId()
         );
+    }
+
+    // 유저 검색 API 추가
+    @GetMapping("/search")
+    public List<UserSearchDto> searchUsers(
+            @RequestHeader("Authorization") String bearerToken,
+            @RequestParam String keyword) {
+
+        String token = bearerToken.replace("Bearer ", "");
+        Long currentUserId = jwtProvider.extractUserId(token);
+
+        return userService.searchUsers(keyword, currentUserId);
     }
 }
