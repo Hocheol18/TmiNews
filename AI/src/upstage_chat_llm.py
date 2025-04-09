@@ -17,7 +17,7 @@ class UpstageChatLLM(BaseChatModel):
 
         payload = {
             "model": self.model,
-            "messages": [{"role": msg.type, "content": msg.content} for msg in messages],
+            "messages": [{"role": self._convert_role(msg), "content": msg.content} for msg in messages],
             "temperature": 0.7
         }
 
@@ -32,3 +32,15 @@ class UpstageChatLLM(BaseChatModel):
     @property
     def _llm_type(self) -> str:
         return "upstage-chat"
+
+    def _convert_role(self, msg: BaseMessage) -> str:
+        if msg.type == "human":
+            return "user"
+        elif msg.type == "ai":
+            return "assistant"
+        elif msg.type == "system":
+            return "system"
+        elif msg.type == "tool":
+            return "tool"
+        else:
+            raise ValueError(f"Unknown message type: {msg.type}")

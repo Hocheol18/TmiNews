@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tmi.app.dto.NewsDto;
 import tmi.app.entity.News;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface NewsRepository extends JpaRepository<News, Long> {
             "GROUP BY n.newsId " +
             "ORDER BY COUNT(c) DESC")
     List<NewsDto> findAllOrderByCommentCount(@Param("userId") Long userId);
+
+    Page<News> findByCategory(String category, Pageable pageable);
 }

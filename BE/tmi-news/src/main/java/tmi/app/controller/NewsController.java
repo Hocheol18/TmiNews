@@ -20,7 +20,8 @@ import tmi.app.entity.User;
 import tmi.app.repository.UserRepository;
 import java.util.HashMap;
 import tmi.app.dto.NewsDetailDto;
-
+import tmi.app.dto.NewsDto;
+import java.util.List;
 
 
 
@@ -131,6 +132,24 @@ public class NewsController {
 
     return ResponseEntity.ok(responseData);
   }
+
+  @GetMapping("/list")
+  public ResponseEntity<?> getNewsListByCategory(
+          @RequestParam String category,
+          @RequestParam(defaultValue = "0") int offset,
+          @RequestParam(defaultValue = "9") int limit
+  ) {
+    List<NewsDto> newsList = newsService.getNewsListByCategory(category, offset, limit);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("status", 200);
+    response.put("message", "카테고리별 뉴스 조회 성공");
+    response.put("data", newsList);
+
+    return ResponseEntity.ok(response);
+  }
+
+
 
   @PostMapping("/{newsId}/likes")
   public ResponseEntity<Void> likeNews(@PathVariable Long newsId,

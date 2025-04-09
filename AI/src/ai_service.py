@@ -152,7 +152,7 @@ def generate():
 
     try:
         chain = get_chain_by_category(category, llm)
-        output = chain.run({
+        output = chain.invoke({
             "title": title,
             "content": content
         })

@@ -15,7 +15,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import tmi.app.entity.User;
 import tmi.app.dto.NewsDetailDto;
+import tmi.app.dto.NewsDto;
 import java.util.Collections;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import java.util.stream.Collectors;
+
 
 
 @Service
@@ -81,6 +87,17 @@ public class NewsService {
                         .likes(likeCount)
                         .build();
         }
+
+        // 뉴스 전체 보기
+        public List<NewsDto> getNewsListByCategory(String category, int offset, int limit) {
+                Pageable pageable = PageRequest.of(offset / limit, limit);
+                Page<News> page = newsRepository.findByCategory(category, pageable);
+
+                return page.getContent().stream()
+                        .map(news -> new NewsDto(news.getNewsId(), news.getTitle(), news.getContent()))
+                        .collect(Collectors.toList());
+        }
+
 
 
 
