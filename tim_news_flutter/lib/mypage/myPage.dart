@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/mypage/myPage_friendsList.dart';
 import 'package:tim_news_flutter/mypage/myPage_notification.dart';
 import 'package:tim_news_flutter/common/articleBlock.dart';
 import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
 import './mypage_class.dart';
+import './../user/secure_storage.dart';
+import './../api/api_login/provider/provider.dart';
+import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
+
 
 // todo: 글 들어오면 테스트, 전체 친구 수
 class MypageMain extends ConsumerStatefulWidget {
@@ -47,7 +52,11 @@ class _MypageMainState extends ConsumerState<MypageMain> {
           isLoading = false;
         });
 
-        print("프로필 데이터: ${userInfo.user.nickname} ${userInfo.user.profileImage} ${userInfo.newsList}");
+        print("프로필 데이터: "
+            "${userInfo.user.nickname} "
+            "${userInfo.user.profileImage} "
+            "${userInfo.friendCount} "
+            "${userInfo.newsList}");
       } else {
         setState(() {
           error = result.error.toString();
@@ -76,6 +85,40 @@ class _MypageMainState extends ConsumerState<MypageMain> {
     _fetchUserProfile();
   }
 
+  // 로그아웃
+  kakaoLogout() async {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder:
+          (BuildContext context) => CupertinoAlertDialog(
+        content: const Text('로그아웃하시겠습니까?'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () => Navigator.pop(context),
+            child: const Text('아니오'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () async {
+              final secureStorage = ref.read(secureStorageProvider);
+              await ref.read(authRepositoryProvider).kakaoLogout();
+              await secureStorage.logout();
+              await ref.read(authControllerProvider.notifier).logOut();
+
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                    (Route<dynamic> route) => false,
+              );
+            },
+            child: Text('예'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +137,12 @@ class _MypageMainState extends ConsumerState<MypageMain> {
             },
           )
         ],
+        leading: IconButton(
+          icon: Icon(Icons.logout_outlined, color: Colors.black),
+          onPressed: () {
+            kakaoLogout();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
@@ -134,7 +183,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
                         child: Column(
                           children: [
                             Text('친구', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-                            Text('000 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
+                            Text('${userProfileData != null ? userProfileData?.friendCount : 000} 명', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))
                           ],
                         ),
                       )

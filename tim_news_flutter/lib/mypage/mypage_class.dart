@@ -37,10 +37,12 @@ class News {
 
 class UserInfo {
   final User user;
-  final List<News> newsList;
+  final int friendCount;
+   final List<News> newsList;
 
   UserInfo({
     required this.user,
+    required this.friendCount,
     required this.newsList
   });
 
@@ -49,6 +51,7 @@ class UserInfo {
     return UserInfo(
       // API의 실제 키 이름에 맞게 수정
         user: User.fromJson(json['user'] ?? {}),
+        friendCount: json['friendCount'] ?? 0,
         // API의 실제 키 이름에 맞게 수정
         newsList: (json['newsList'] as List<dynamic>?)
             ?.map((newsJson) => News.fromJson(newsJson))
