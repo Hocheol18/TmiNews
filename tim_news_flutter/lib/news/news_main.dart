@@ -23,52 +23,11 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
     });
   }
 
-  kakaoLogout() async {
-    showCupertinoModalPopup<void>(
-      context: context,
-      builder:
-          (BuildContext context) => CupertinoAlertDialog(
-            content: const Text('로그아웃하시겠습니까?'),
-            actions: <CupertinoDialogAction>[
-              CupertinoDialogAction(
-                isDefaultAction: true,
-                onPressed: () => Navigator.pop(context),
-                child: const Text('아니오'),
-              ),
-              CupertinoDialogAction(
-                isDestructiveAction: true,
-                onPressed: () async {
-                  final secureStorage = ref.read(secureStorageProvider);
-                  await ref.read(authRepositoryProvider).kakaoLogout();
-                  await secureStorage.logout();
-                  await ref.read(authControllerProvider.notifier).logOut();
-
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (Route<dynamic> route) => false,
-                  );
-                },
-                child: Text('예'),
-              ),
-            ],
-          ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMI'),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              kakaoLogout();
-            },
-            child: Icon(Icons.logout),
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(20),
           child: TopNavigator(

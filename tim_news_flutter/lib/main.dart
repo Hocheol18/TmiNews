@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tim_news_flutter/news/news_create_completion.dart';
 import 'package:tim_news_flutter/screens/loginPage.dart';
 import 'package:tim_news_flutter/screens/mainPage.dart';
 import 'package:tim_news_flutter/screens/myPage.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         '/main': (context) => MainPage(),
         '/create': (context) => NewsCreatePage(),
         '/mypage': (context) => MyPage(),
-        '/test': (context) => MyPage(),
+        '/test': (context) => NewsCreateCompletion(),
       },
     );
   }

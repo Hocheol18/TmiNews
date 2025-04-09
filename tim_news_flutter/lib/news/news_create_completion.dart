@@ -74,8 +74,11 @@ class NewsCreateCompletion extends ConsumerStatefulWidget {
   // getter 호출될 때 (런타임) 평가되지, 클래스 인스턴스가 생성될 때 (컴파일) 평가되지 않음
   // 따라서 title getter가 호출될 때는 res 변수가 완전히 초기화된 상태
   String get title => res?.data['title'] ?? '제목 없음';
+
   String get category => res?.data['category'] ?? '카테고리 없음';
+
   String get content => res?.data['content'] ?? '컨텐츠 없음';
+
   String get newsTime => res?.data['newsTime'] ?? '시간 없음';
 
   @override
@@ -111,12 +114,22 @@ class _NewsCreateCompletionState extends ConsumerState<NewsCreateCompletion> {
           ),
           GestureDetector(
             onTap: () async {
-              Response res = await newsCreatePostSubmit(ref, widget.category, widget.content, widget.title, widget.newsTime);
+              //TODO :: FIREBASE로 공유만들기
+              Response res = await newsCreatePostSubmit(
+                ref,
+                widget.category,
+                widget.content,
+                widget.title,
+                widget.newsTime,
+              );
               if (res.statusCode == 201) {
-                //TODO : 공유페이지는 따로 아래에서 올라오는 애니메이션으로 바꿈
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MainPage()), (route) => false);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => MainPage()),
+                  (route) => false,
+                );
               }
-              },
+            },
             child: Container(
               margin: EdgeInsets.fromLTRB(50, 30, 50, 0),
               width: double.infinity,

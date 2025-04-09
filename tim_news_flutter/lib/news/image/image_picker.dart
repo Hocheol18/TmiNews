@@ -126,7 +126,7 @@ class _ImageAddState extends ConsumerState<ImageAdd> {
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) {
-                        return LoadingPage();
+                        return LoadingPage(title : "뉴스를 생성중입니다...");
                       },
                     );
 
