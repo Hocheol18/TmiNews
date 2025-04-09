@@ -18,7 +18,7 @@ UPSTAGE_API_TOKEN = os.environ.get("UPSTAGE_API_TOKEN")
 # Upstage LLM
 llm = UpstageChatLLM(api_token=UPSTAGE_API_TOKEN, model="solar-pro")
 
-# 카테고리별 프롬프트 템플릿
+# 카테고리별 프롬프트 템플릿 딕셔너리
 prompt_templates = {
     "it": PromptTemplate(
         input_variables=["title", "content"],
@@ -110,11 +110,10 @@ prompt_templates = {
     )
 }
 
-# 프롬프트 선택 함수 (Runnable 반환)
+# 프롬프트 체인 선택 함수
 def get_chain_by_category(category: str):
-    key = category.strip().lower()
-    prompt = prompt_templates.get(key, prompt_templates["default"])
-    return prompt | llm
+    prompt = prompt_templates.get(category.strip().lower(), prompt_templates["default"])
+    return prompt | llm  # 최신 방식 (Runnable)
 
 # 생성 API
 @app.route("/generate", methods=["POST"])
@@ -128,18 +127,17 @@ def generate():
     title = data.get("title", "").strip()
     content = data.get("content", "").strip()
     category = data.get("category", "").strip()
-    
+
     if not title or not content or not category:
         return jsonify({"error": "title, content, category 값은 필수입니다."}), 400
 
     try:
         chain = get_chain_by_category(category)
-        output = chain.invoke({
-            "title": title,
-            "content": content
-        })
+        output = chain.invoke({"title": title, "content": content})
 
-        result = json.loads(output) if isinstance(output, str) else output
+        # AIMessage에서 content 꺼내기
+        content_str = output.content if hasattr(output, "content") else output
+        result = json.loads(content_str) if isinstance(content_str, str) else content_str
 
         generated_title = result.get("generated_title", "AI 제목 생성 실패")
         generated_content = result.get("generated_content", "AI 본문 생성 실패")
