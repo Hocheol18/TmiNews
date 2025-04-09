@@ -88,14 +88,15 @@ public class FriendController {
     }
 
     // 친구 마이페이지 조회
-    @GetMapping("/{friendId}/mypage")
+    @GetMapping("/mypage")
     public ResponseEntity<MyPageResponse> getFriendPage(
-            @PathVariable Long friendId,
+            @RequestParam Long friendId,
             @RequestParam(required = false, defaultValue = "recent") String sortBy) {
 
         MyPageResponse response = userService.getFriendPage(friendId, sortBy);
         return ResponseEntity.ok(response);
     }
+
 
 
     // JWT에서 userId 추출하는 공통 메서드
