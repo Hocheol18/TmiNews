@@ -145,6 +145,7 @@ class _ImageAddState extends ConsumerState<ImageAdd> {
 
                       // 성공 시 다이얼로그 닫고 다음 화면으로 이동
                       Navigator.pop(context); // 로딩 다이얼로그닫기
+                      newsNotifier.resetData();
                       Navigator .pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

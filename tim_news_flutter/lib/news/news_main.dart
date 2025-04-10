@@ -21,7 +21,10 @@ class NewsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: GridView.builder(
+      child: GestureDetector(
+        onTap: () {},
+        child:
+      GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -55,7 +58,7 @@ class NewsContent extends StatelessWidget {
           );
         },
       ),
-    );
+    ));
   }
 }
 
