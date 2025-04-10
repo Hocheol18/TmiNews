@@ -37,7 +37,7 @@ class TitleWidget extends StatelessWidget {
                     textFunction('재테크', 50),
                     textFunction('아이티', 50),
                     textFunction('건강', 50),
-                    textFunction('연애', 50),
+                    textFunction('연예', 50),
                     textFunction('사회', 50),
                     textFunction('스포츠', 50),
                   ],
