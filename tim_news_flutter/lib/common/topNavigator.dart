@@ -60,7 +60,7 @@ class _TopNavigatorState extends State<TopNavigator>
                 (title) => Tab(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 1),
-                    child: Text(title, style: TextStyle(fontSize: 12)),
+                    child: Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                   ),
                 ),
               )
