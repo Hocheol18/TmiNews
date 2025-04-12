@@ -32,6 +32,7 @@ public class NewsService {
         private final NewsLikeRepository newsLikeRepository;
         private final UserRepository userRepository;
         private final CommentService commentService;
+        private final NotificationService notificationService;
 
         public void registerNews(NewsRegisterRequest request, User user) {
                 // news_time을 LocalDateTime으로 파싱
@@ -133,6 +134,8 @@ public class NewsService {
                         .build();
 
                 newsLikeRepository.save(like);
+                notificationService.notifyNewsLike(news.getUser(), newsId, user.getNickname());
+
         }
 
         // 좋아요 취소

@@ -29,6 +29,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final NewsRepository newsRepository;
     private final JwtProvider jwtProvider;
+    private final NotificationService notificationService;
 
     public CommentResponseDTO createComment(Long newsId, CommentRequestDTO request, String token) {
         Long userId = jwtProvider.extractUserId(token);
@@ -47,6 +48,10 @@ public class CommentService {
                 .build();
 
         Comment saved = commentRepository.save(comment);
+
+        if (!user.getUserId().equals(news.getUser().getUserId())) { // 자기 자신에게는 알림 X
+            notificationService.notifyNewsComment(news.getUser(), newsId, user.getNickname());
+        }
 
         return CommentResponseDTO.builder()
                 .replyId(saved.getReplyId())
