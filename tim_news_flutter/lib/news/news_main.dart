@@ -70,7 +70,7 @@ class NewsMainPage extends ConsumerStatefulWidget {
 }
 
 class _NewsMainPageState extends ConsumerState<NewsMainPage> {
-  final List<String> _tabTitles = ['재테크', 'IT', '건강', '사회', '연예', '스포츠'];
+  final List<String> _tabTitles = ['재테크', 'IT', '건강', '사회', '연애', '스포츠'];
   int _tabIndex = 0;
 
   void _handleTabChanged(int index) {

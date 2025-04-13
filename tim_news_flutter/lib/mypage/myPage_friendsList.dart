@@ -8,8 +8,10 @@ import './mypage_class.dart';
 // todo: 친구 있을 때 테스트 다시 해봐야 함
 // check: 프로필 이미지 없으면 어떻게 나오는지
 class MypageFriendList extends ConsumerStatefulWidget {
-  const MypageFriendList({super.key, this.userName});
+  const MypageFriendList({super.key, this.userName, this.friendCount});
   final userName;
+  final friendCount;
+
   @override
   ConsumerState<MypageFriendList> createState() => _MypageFriendListState();
 }
@@ -162,7 +164,7 @@ class _MypageFriendListState extends ConsumerState<MypageFriendList> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '${widget.userName}님의 친구(000명)',
+                '${widget.userName}님의 친구(${widget.friendCount}명)',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22

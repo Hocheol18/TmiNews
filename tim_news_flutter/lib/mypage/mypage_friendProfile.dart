@@ -80,9 +80,9 @@ class _FriendProfileState extends ConsumerState<FriendProfile> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          userProfileData != null
+          userProfileData == null
           ? '친구의 마이페이지'
-          : '${userProfileData!.user.nickname}님의 페이지',
+          : '${userProfileData?.user.nickname}님의 페이지',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold
           ),),
         backgroundColor: Color(0xffFFD43A),

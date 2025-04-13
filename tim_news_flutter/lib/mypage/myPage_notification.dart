@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
+import 'package:tim_news_flutter/mypage/mypage_class.dart';
+
+
+// todo
+// - [x] 알림 전체 리스트 조회
+// - [ ] 알림 읽음/안읽음 처리
+// - [ ] 친구 요청 처리
+// - [ ] 좋아요, 댓글 처리 -> 누르면 해당 뉴스로 갈 수 있도록
 
 class MyPageNotification extends ConsumerStatefulWidget {
   const MyPageNotification({super.key});
@@ -9,8 +18,53 @@ class MyPageNotification extends ConsumerStatefulWidget {
 }
 
 class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
+  bool isLoading = true;
+  String? error;
+  List<Alarm> ? alarms;
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchNotifications();
+    });
+  }
+
+  Future<void> _fetchNotifications() async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(mypageApiServiceProvider);
+      final result = await apiService.getAlarmList();
+
+      // 결과 처리
+      if (result.isSuccess) {
+        setState(() {
+          alarms = result.value;
+          isLoading = false;
+        });
+        print("알람 리스트: ${result.value}");
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(

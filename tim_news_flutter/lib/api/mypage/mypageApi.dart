@@ -37,6 +37,31 @@ class MypageApiService {
     });
   }
 
+
+  // 전체 알림 리스트 조회
+  Future<Result<List<Alarm>, CustomExceptions>> getAlarmList() async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+
+      final response = await dio.get(
+        'http://${dotenv.env['LOCAL_API_URL']}/notifications',
+        options: Options(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
+      );
+
+      // 빈 배열이 오는 경우를 처리
+      if (response.data is List) {
+        List<dynamic> dataList = response.data as List;
+        return dataList.map((data) =>
+            Alarm.fromJson(data as Map<String, dynamic>)).toList();
+      }
+
+      // 예외 상황: 배열이 아닌 경우 빈 배열 반환
+      return <Alarm>[];
+    });
+  }
+
   // 친구 목록 조회
   Future<Result<List<FriendInfo>, CustomExceptions>> getFriendList() async {
     return runCatchingExceptions(() async {
@@ -120,6 +145,7 @@ class MypageApiService {
           headers: {'Authorization': 'Bearer $accessToken'},
         ),
       );
+      print('친구 신청보냄');
     });
   }
 
@@ -135,6 +161,7 @@ class MypageApiService {
         ),
       );
 
+      print(response.data);
       return response.data;
     });
   }

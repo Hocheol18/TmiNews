@@ -19,18 +19,21 @@ class News {
   final int newsId;
   final String title;
   final String content;
+  final int commentCount;
 
   News({
     required this.newsId,
     required this.title,
-    required this.content
+    required this.content,
+    required this.commentCount
   });
 
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
         newsId: json['newsId'] ?? 0,
         title: json['title'] ?? '',
-        content: json['content'] ?? ''
+        content: json['content'] ?? '',
+        commentCount: json['commentCount'] ?? 0
     );
   }
 }
@@ -76,6 +79,38 @@ class FriendInfo {
         userId: json['userId'] ?? 0,
         nickname: json['nickname'] ?? '',
         profileImage: json['profileImage'] ?? ''
+    );
+  }
+}
+
+class Alarm {
+  final int id;
+  final String message;
+  final String type;
+  final int targetId;
+  final int targetUserId;
+  final String createdAt;
+  final bool read;
+
+  Alarm({
+    required this.id,
+    required this.message,
+    required this.type,
+    required this.targetId,
+    required this.targetUserId,
+    required this.createdAt,
+    required this.read,
+  });
+
+  factory Alarm.fromJson(Map<String, dynamic> json) {
+    return Alarm(
+      id: json['id'] ?? 0,
+      message: json['message'] ?? '',
+      type: json['type'] ?? '',
+      targetId: json['targetId'] ?? 0,
+      targetUserId: json['targetUserId'] ?? 0,
+      createdAt: json['createdAt'] ?? '',
+      read: json['read'] ?? false,
     );
   }
 }
