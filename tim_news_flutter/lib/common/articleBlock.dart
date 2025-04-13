@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import './../news/news_detail.dart';
 
 
 // 글 블록, 색은 4가지 중 랜덤으로
@@ -22,18 +23,26 @@ class ArticleBlock extends StatelessWidget {
     ];
     final randomPredefinedColor = colorList[random.nextInt(colorList.length)];
 
-    return Container(
-      decoration: BoxDecoration(
-        color: randomPredefinedColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: EdgeInsets.all(8),
-      child: Center(
-        child: Text(
-          content,
-          style: TextStyle(fontSize: 20),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 3
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewsDetail(newsKey: news_id,)),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: randomPredefinedColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: EdgeInsets.all(8),
+        child: Center(
+          child: Text(
+            content,
+            style: TextStyle(fontSize: 20),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 3
+          ),
         ),
       ),
     );

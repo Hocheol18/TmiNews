@@ -11,7 +11,8 @@ import './../api/api_login/provider/provider.dart';
 import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
 
 
-// todo: 글 들어오면 테스트, 전체 친구 수
+// todo: 새로운 알림 리스트 조회 후, 데이터가 있으면 뱃지 달아주기
+
 class MypageMain extends ConsumerStatefulWidget {
   const MypageMain({super.key});
 
@@ -43,6 +44,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
 
       final apiService = ref.read(mypageApiServiceProvider);
       final result = await apiService.getUserProfile(sortType);
+      await apiService.getAlarmList();
 
       if (result.isSuccess) {
         final userInfo = UserInfo.fromJson(result.value);
@@ -176,7 +178,8 @@ class _MypageMainState extends ConsumerState<MypageMain> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => MypageFriendList(
-                              userName: userProfileData?.user.nickname ?? '사용자'
+                              userName: userProfileData?.user.nickname ?? '사용자',
+                              friendCount: userProfileData?.friendCount ?? 000
                             )),
                           );
                         },
