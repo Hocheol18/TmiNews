@@ -1,11 +1,66 @@
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
+import 'package:tim_news_flutter/api/api_news/news_get/news_all.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../user/secure_storage.dart';
-import '../api/api_login/provider/provider.dart';
-import 'package:tim_news_flutter/common/articleBlock.dart';
+
+import '../common/loading_page.dart';
+
+final newsFetchProvider = FutureProvider.family((ref, String category) async {
+  final repository = ref.read(newsRepositoryProvider);
+  return await repository.newsFetch(category);
+});
+
+class NewsContent extends StatelessWidget {
+  const NewsContent({super.key, required this.newsList});
+
+  final List<dynamic> newsList;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: GestureDetector(
+        onTap: () {},
+        child:
+      GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 7,
+          mainAxisSpacing: 7,
+        ),
+        itemCount: newsList.length,
+        itemBuilder: (context, index) {
+          final item = newsList[index];
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.primaries[Random().nextInt(Colors.primaries.length)]
+                  .withValues(alpha: 0.3),
+            ),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                    item['title'],
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    ));
+  }
+}
 
 class NewsMainPage extends ConsumerStatefulWidget {
   const NewsMainPage({super.key});
@@ -26,6 +81,8 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final newsValue = ref.watch(newsFetchProvider(_tabTitles[_tabIndex]));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMI'),
@@ -38,26 +95,13 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Container(child: ElevatedButton(onPressed: () async {
-            final secureStorage = ref.read(secureStorageProvider);
-
-            // 토큰 불러오기
-            final accessToken = await secureStorage.readAccessToken();
-            final refreshToken = await secureStorage.readRefreshToken();
-            final userModel = await secureStorage.readUserInfo();
-            print(userModel?.nickname);
-
-            print('Access Token: $accessToken');
-            print('Refresh Token: $refreshToken');
-          }, child: Text('눌러')),),
-          SizedBox(
-            width: 100,
-            height: 100,
-            child: ArticleBlock(content: '임시 뉴스 바로가기', news_id: 1)
-          )
-        ],
+      body: newsValue.when(
+        data: (newsData) {
+          final newsList = newsData.data['data'] ?? [];
+          return NewsContent(newsList: newsList);
+        },
+        loading: () => const LoadingPage(title: '뉴스를 받아오는 중입니다...'),
+        error: (error, stack) => Center(child: Text("오류 발생, $error")),
       ),
     );
   }

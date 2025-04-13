@@ -49,7 +49,8 @@ class _TopNavigatorState extends State<TopNavigator>
 
   @override
   Widget build(BuildContext context) {
-    return TabBar(
+    return
+      TabBar(
       controller: _tabController,
       isScrollable: false,
       labelColor: Colors.red,
@@ -60,7 +61,7 @@ class _TopNavigatorState extends State<TopNavigator>
                 (title) => Tab(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 1),
-                    child: Text(title, style: TextStyle(fontSize: 12)),
+                    child: Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                   ),
                 ),
               )
