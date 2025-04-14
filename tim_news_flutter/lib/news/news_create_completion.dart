@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/theme/colors.dart';
 
-import '../screens/mainPage.dart';
 import '../theme/news_create_completion_page.dart';
 import 'image/image_data_submit.dart';
 import 'news_create_page.dart';
@@ -123,10 +122,9 @@ class _NewsCreateCompletionState extends ConsumerState<NewsCreateCompletion> {
                 widget.newsTime,
               );
               if (res.statusCode == 201) {
-                Navigator.pushAndRemoveUntil(
+                Navigator.pushReplacementNamed(
                   context,
-                  MaterialPageRoute(builder: (_) => MainPage()),
-                  (route) => false,
+                  '/main',
                 );
               }
             },

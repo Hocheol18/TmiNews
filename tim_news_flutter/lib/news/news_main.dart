@@ -1,15 +1,47 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tim_news_flutter/api/api_news/news_get/news_all.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:crypto/crypto.dart';
 
 import '../common/loading_page.dart';
 
+final dataHashProvider = StateProvider<Map<String, String>>((ref) => {});
+final newsCacheData = StateProvider<Map<String, dynamic>>((ref) => {});
+
+String computeHash(dynamic data) {
+  final jsonString = jsonEncode(data);
+  final bytes = utf8.encode(jsonString);
+  final digest = sha256.convert(bytes);
+  return digest.toString();
+}
+
 final newsFetchProvider = FutureProvider.family((ref, String category) async {
   final repository = ref.read(newsRepositoryProvider);
-  return await repository.newsFetch(category);
+  final result = await repository.newsFetch(category);
+
+  final newHash = computeHash(result.data['data']);
+  final dataHash = ref.read(dataHashProvider);
+
+  if (!dataHash.containsKey(category) || dataHash[category] != newHash) {
+    ref.read(dataHashProvider.notifier).update((state) {
+      final newState = Map<String, String>.from(state);
+      newState[category] = newHash;
+      return newState;
+    });
+
+    ref.read(newsCacheData.notifier).update((state) {
+      final newState = Map<String, dynamic>.from(state);
+      newState[category] = result;
+      return newState;
+    });
+  }
+
+  return result;
+
 });
 
 class NewsContent extends StatelessWidget {
@@ -70,13 +102,22 @@ class NewsMainPage extends ConsumerStatefulWidget {
 }
 
 class _NewsMainPageState extends ConsumerState<NewsMainPage> {
-  final List<String> _tabTitles = ['재테크', 'IT', '건강', '사회', '연애', '스포츠'];
+  final List<String> _tabTitles = ['재테크', 'IT', '건강', '사회', '연예', '스포츠'];
   int _tabIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.invalidate(newsFetchProvider(_tabTitles[_tabIndex]));
+    });
+  }
 
   void _handleTabChanged(int index) {
     setState(() {
       _tabIndex = index;
     });
+
   }
 
   @override
@@ -97,7 +138,7 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
       ),
       body: newsValue.when(
         data: (newsData) {
-          final newsList = newsData.data['data'] ?? [];
+          final newsList = newsData.data['data'] ?? ['노데이터'];
           return NewsContent(newsList: newsList);
         },
         loading: () => const LoadingPage(title: '뉴스를 받아오는 중입니다...'),

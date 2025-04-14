@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +15,15 @@ class NewsCreatePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pushReplacementNamed(
+              context,
+              '/main',
+            );
+          },
+          child: Icon(CupertinoIcons.back),
+        ),
         title: Text(
           '나만의 뉴스 만들기',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
@@ -167,7 +177,10 @@ class _News_createState extends ConsumerState<News_create> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(DateFormat('yyyy-MM-dd').format(newsData.date), style: TextStyle(fontSize: 16)),
+                        Text(
+                          DateFormat('yyyy-MM-dd').format(newsData.date),
+                          style: TextStyle(fontSize: 16),
+                        ),
                         Icon(Icons.calendar_today, size: 20),
                       ],
                     ),
@@ -214,7 +227,6 @@ class _News_createState extends ConsumerState<News_create> {
                       },
                       autovalidateMode: AutovalidateMode.always,
                     ),
-
                   ),
                 ),
                 SizedBox(height: 20),

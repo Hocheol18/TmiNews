@@ -24,7 +24,7 @@ class NewsRepository {
     final String? accessToken = await storage.readAccessToken();
 
     return await dio.get('http://${dotenv.env['LOCAL_API_URL']}/news/list',
-        queryParameters: {"category" : category},
+        queryParameters: {"category" : category, "limit" : "15"},
         options: Options(
             headers: {
               'Authorization': 'Bearer $accessToken',

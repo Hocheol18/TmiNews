@@ -5,11 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
-import '../screens/mainPage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> main() async {
-  print("dasdf");
   KakaoSdk.init(nativeAppKey:dotenv.env['NATIVE_APP_KEY']);
 
   try {
@@ -117,9 +115,9 @@ class KakaoLogin extends ConsumerWidget {
       onTap: () async {
         final success = await loginLogic(context, ref);
         if (context.mounted && success) {
-          Navigator.pushReplacement(
+          Navigator.pushReplacementNamed(
             context,
-            MaterialPageRoute(builder: (context) => MainPage()),
+            '/main',
           );
         }
       },
