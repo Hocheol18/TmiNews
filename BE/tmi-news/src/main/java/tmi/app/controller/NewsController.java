@@ -23,8 +23,6 @@ import tmi.app.dto.NewsDetailDto;
 import tmi.app.dto.NewsDto;
 import java.util.List;
 
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/news")
@@ -78,7 +76,8 @@ public class NewsController {
             "content", request.getContent(),
             "category", request.getCategory()))
         .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
+        .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {
+        })
         .block();
 
     logger.info("AI 서버 응답: {}", aiResponse);
@@ -99,24 +98,24 @@ public class NewsController {
 
   @PostMapping
   public ResponseEntity<?> registerNews(@RequestHeader("Authorization") String bearerToken,
-                                        @RequestBody NewsRegisterRequest request) {
+      @RequestBody NewsRegisterRequest request) {
     // JWT에서 토큰 추출 후 userId 조회
     String token = bearerToken.replace("Bearer ", "");
     Long userId = jwtProvider.extractUserId(token);
     logger.info("토큰으로 추출한 userId: {}", userId);
 
     User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        .orElseThrow(() -> new RuntimeException("User not found"));
 
     // NewsService에 User 객체를 함께 전달
     newsService.registerNews(request, user);
     return ResponseEntity.status(201).build();
   }
+
   @GetMapping("/{newsId}")
   public ResponseEntity<?> getNewsDetail(
-          @RequestHeader("Authorization") String bearerToken,
-          @PathVariable Long newsId
-  ) {
+      @RequestHeader("Authorization") String bearerToken,
+      @PathVariable Long newsId) {
     // (1) JWT 파싱, 사용자 권한 체크 등 필요 시 처리
     String token = bearerToken.replace("Bearer ", "");
     Long userId = jwtProvider.extractUserId(token);
@@ -135,11 +134,11 @@ public class NewsController {
 
   @GetMapping("/list")
   public ResponseEntity<?> getNewsListByCategory(
-          @RequestParam String category,
-          @RequestParam(defaultValue = "0") int offset,
-          @RequestParam(defaultValue = "9") int limit
-  ) {
-    List<NewsDto> newsList = newsService.getNewsListByCategory(category, offset, limit);
+      @RequestParam String category,
+      @RequestParam(defaultValue = "0") int offset,
+      @RequestParam(defaultValue = "9") int limit,
+      @RequestParam(defaultValue = "createdAt") String sort) {
+    List<NewsDto> newsList = newsService.getNewsListByCategory(category, offset, limit, sort);
 
     Map<String, Object> response = new HashMap<>();
     response.put("status", 200);
@@ -149,11 +148,9 @@ public class NewsController {
     return ResponseEntity.ok(response);
   }
 
-
-
   @PostMapping("/{newsId}/likes")
   public ResponseEntity<Void> likeNews(@PathVariable Long newsId,
-                                       @RequestHeader("Authorization") String bearerToken) {
+      @RequestHeader("Authorization") String bearerToken) {
     String token = bearerToken.replace("Bearer ", "");
     Long userId = jwtProvider.extractUserId(token);
 
@@ -163,13 +160,12 @@ public class NewsController {
 
   @DeleteMapping("/{newsId}/likes")
   public ResponseEntity<Void> unlikeNews(@PathVariable Long newsId,
-                                         @RequestHeader("Authorization") String bearerToken) {
+      @RequestHeader("Authorization") String bearerToken) {
     String token = bearerToken.replace("Bearer ", "");
     Long userId = jwtProvider.extractUserId(token);
 
     newsService.unlikeNews(newsId, userId);
     return ResponseEntity.ok().build();
   }
-
 
 }
