@@ -5,11 +5,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tim_news_flutter/api/dio.dart';
 import 'package:tim_news_flutter/user/secure_storage.dart';
 
-import '../../../news/models/news_pagination_model.dart';
-import '../../../news/pagination/pagination_result.dart';
-import '../../../news/pagination/pagination_run_catching_exception.dart';
-import '../../../news/pagination/pagination_state.dart';
-
 part 'news_all.g.dart';
 
 @Riverpod(keepAlive: true)
@@ -25,26 +20,17 @@ class NewsRepository {
   final Dio dio;
   final SecureStorage storage;
 
-  //TODO : CustomExceptions
-  Future<Result<Pagination<NewsPaginationModel>>> newsFetch(String category, int idx, int limit) async {
+  Future<Response> newsFetch(String category) async {
     final String? accessToken = await storage.readAccessToken();
 
-    return runCatchingExceptions(() async {
-      final resp = await dio.get(
-        'http://${dotenv.env['LOCAL_API_URL']}/news/list',
-        queryParameters: {"category": category, "offset": idx, "limit": limit},
+    return await dio.get('http://${dotenv.env['LOCAL_API_URL']}/news/list',
+        queryParameters: {"category" : category, "limit" : "15"},
         options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            "Content-Type": "application/json",
-          },
-        ),
-      );
-
-      return Pagination.fromJson(
-        resp.data,
-            (json) => NewsPaginationModel.fromJson(json as Map<String, dynamic>),
-      );
-    });
+            headers: {
+              'Authorization': 'Bearer $accessToken',
+              "Content-Type": "application/json",
+            }
+        )
+    );
   }
 }

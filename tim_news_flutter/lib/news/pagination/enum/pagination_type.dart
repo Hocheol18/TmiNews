@@ -1,4 +1,0 @@
-enum PaginationType {
-  newsData,
-  myPage,
-}
