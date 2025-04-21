@@ -17,10 +17,7 @@ class NewsCreatePage extends ConsumerWidget {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-            Navigator.pushReplacementNamed(
-              context,
-              '/main',
-            );
+            Navigator.pushReplacementNamed(context, '/main');
           },
           child: Icon(CupertinoIcons.back),
         ),
@@ -80,6 +77,14 @@ class _News_createState extends ConsumerState<News_create> {
     return _contentController.text.length >= textLength
         ? null
         : "10글자 이상 입력해주세요.";
+  }
+
+  bool checkFunction() {
+    bool isTitle = _titleController.text.trim().isNotEmpty;
+    bool isContent = _contentController.text.length >= textLength;
+
+    if (isTitle && isContent) return true;
+    return false;
   }
 
   @override
@@ -249,9 +254,15 @@ class _News_createState extends ConsumerState<News_create> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const ImageAdd()),
-                  );
+                  if (checkFunction()) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const ImageAdd()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("내용을 다시 확인해주세요")));
+                  }
                 },
                 child: Text(
                   '다음으로',
