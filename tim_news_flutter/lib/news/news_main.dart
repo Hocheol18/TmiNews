@@ -23,7 +23,7 @@ final newsFetchProvider = FutureProvider.family((ref, String category) async {
   final repository = ref.read(newsRepositoryProvider);
   final result = await repository.newsFetch(category, 1, 1);
 
-  final newHash = computeHash(result);
+  final newHash = computeHash(result.data['data']);
   final dataHash = ref.read(dataHashProvider);
 
   if (!dataHash.containsKey(category) || dataHash[category] != newHash) {
@@ -136,15 +136,15 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
           ),
         ),
       ),
-      // body:
-      // newsValue.when(
-      //   data: (newsData) {
-      //     final newsList = newsData.data['data'] ?? ['노데이터'];
-      //     return NewsContent(newsList: newsList);
-      //   },
-      //   loading: () => const LoadingPage(title: '뉴스를 받아오는 중입니다...'),
-      //   error: (error, stack) => Center(child: Text("오류 발생, $error")),
-      // ),
+      body:
+      newsValue.when(
+        data: (newsData) {
+          final newsList = newsData.data['data'] ?? ['노데이터'];
+          return NewsContent(newsList: newsList);
+        },
+        loading: () => const LoadingPage(title: '뉴스를 받아오는 중입니다...'),
+        error: (error, stack) => Center(child: Text("오류 발생, $error")),
+      ),
     );
   }
 }
