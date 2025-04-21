@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tim_news_flutter/common/bottomNavigator.dart';
 
 // 뉴스 디테일 페이지: newsKey로 조회
 class NewsDetail extends StatelessWidget {
@@ -26,7 +25,6 @@ class NewsDetail extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigator()
     );
   }
 }

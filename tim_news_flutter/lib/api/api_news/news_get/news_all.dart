@@ -20,11 +20,11 @@ class NewsRepository {
   final Dio dio;
   final SecureStorage storage;
 
-  Future<Response> newsFetch(String category) async {
+  Future<Response> newsFetch(String category, int offset) async {
     final String? accessToken = await storage.readAccessToken();
 
     return await dio.get('http://${dotenv.env['LOCAL_API_URL']}/news/list',
-        queryParameters: {"category" : category},
+        queryParameters: {"category" : category, "limit" : "15", "offset" : offset},
         options: Options(
             headers: {
               'Authorization': 'Bearer $accessToken',

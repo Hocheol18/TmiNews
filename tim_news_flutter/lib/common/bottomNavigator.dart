@@ -3,14 +3,17 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 
 class BottomNavigator extends StatelessWidget {
-  const BottomNavigator({super.key});
+  const BottomNavigator({super.key, required this.currentIndex, required this.onTap});
+
+  final int currentIndex;
+  final Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
     return StyleProvider(
       style: CustomStyle(),
       child: ConvexAppBar(
-        initialActiveIndex: 1,
+        initialActiveIndex: currentIndex,
         style: TabStyle.fixedCircle,
         backgroundColor: Colors.white,
         color: Colors.black,
@@ -20,15 +23,7 @@ class BottomNavigator extends StatelessWidget {
           TabItem(icon: CupertinoIcons.book, title: '보기'),
           TabItem(icon: Icons.person, title: '마이'),
         ],
-        onTap: (int index) {
-          if (index == 0) {
-            Navigator.pushReplacementNamed(context, '/create');
-          } else if (index == 1) {
-            Navigator.pushReplacementNamed(context, '/main');
-          } else if (index == 2) {
-            Navigator.pushReplacementNamed(context, '/mypage');
-          }
-        },
+        onTap: onTap,
       ),
     );
   }
