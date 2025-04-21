@@ -6,8 +6,8 @@ import 'package:tim_news_flutter/api/dio.dart';
 import 'package:tim_news_flutter/user/secure_storage.dart';
 
 import '../../../news/models/news_pagination_model.dart';
-import '../../../news/pagination/pagination_result.dart';
-import '../../../news/pagination/pagination_run_catching_exception.dart';
+import '../../../news/pagination/result/pagination_result.dart';
+import '../../../news/pagination/custom_error/pagination_run_catching_exception.dart';
 import '../../../news/pagination/pagination_state.dart';
 
 part 'news_all.g.dart';

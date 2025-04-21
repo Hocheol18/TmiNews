@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:tim_news_flutter/news/pagination/pagination_custom_error.dart';
-import 'package:tim_news_flutter/news/pagination/pagination_result.dart';
+import 'package:tim_news_flutter/news/pagination/custom_error/pagination_custom_error.dart';
+import 'package:tim_news_flutter/news/pagination/result/pagination_result.dart';
 
 
 Future<Result<T>> runCatchingExceptions<T>(Future<T> Function() block) async {

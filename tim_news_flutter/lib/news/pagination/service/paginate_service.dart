@@ -7,7 +7,7 @@ import 'package:tim_news_flutter/news/pagination/model/pagination_params.dart';
 import 'package:tim_news_flutter/user/secure_storage.dart';
 
 import '../enum/pagination_type.dart';
-import '../pagination_result.dart';
+import '../result/pagination_result.dart';
 import '../pagination_state.dart';
 
 part 'paginate_service.g.dart';

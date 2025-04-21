@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tim_news_flutter/news/pagination/pagination_custom_error.dart';
+import 'package:tim_news_flutter/news/pagination/custom_error/pagination_custom_error.dart';
 
 part 'pagination_result.freezed.dart';
 

@@ -1,6 +1,6 @@
 import '../enum/pagination_type.dart';
 import '../model/pagination_params.dart';
-import '../pagination_result.dart';
+import '../result/pagination_result.dart';
 import '../pagination_state.dart';
 import 'IModelWithIdClass.dart';
 

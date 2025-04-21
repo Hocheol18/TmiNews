@@ -4,9 +4,9 @@ import 'package:tim_news_flutter/news/pagination/model/pagination_params.dart';
 
 import '../class/IModelWithIdClass.dart';
 import '../enum/pagination_type.dart';
-import '../pagination_custom_error.dart';
+import '../custom_error/pagination_custom_error.dart';
 import '../pagination_state.dart';
-import '../pagination_result.dart';
+import 'package:tim_news_flutter/news/pagination/result/pagination_result.dart';
 
 class PaginationController<
   T extends IModelWithId,
@@ -48,6 +48,8 @@ class PaginationController<
       firstCursor = '9999999999999999';
     }
     PaginationParams? paginationParams = PaginationParams(
+      category: 'IT',
+      limit: 12,
       customCursor: firstCursor,
       index: fetchCount,
     );
@@ -59,35 +61,36 @@ class PaginationController<
     }
 
     // 실제 네트워크 통신
-    final result = await service.newsFetch(type: type, paginationParams: paginationParams);
+    final Result<Pagination<T>> result = await service.newsFetch(type: type, paginationParams: paginationParams);
+    print(result);
 
-    result.when(
-      success: (pagination) {
-        if (fetchMore && state is PaginationFetchingMore<T>) {
-          final pState = state as PaginationFetchingMore<T>;
-          state = pagination.copyWith(data: [
-            ...pState.data,
-            ...pagination.data
-          ]);
-        } else {
-          if (pagination.data.isEmpty && type == PaginationType.myPage) {
-            state = PaginationNothing(mapper: ErrorMapper());
-          } else {
-            state = pagination;
-          }
-        }
-      },
-      failure: (error) {
-        error.when(
-          notingStore: (message) {
-            state = PaginationNothing(mapper: ErrorMapper());
-          },
-          orElse: () {
-            state = PaginationError(mapper: ErrorMapper());
-          },
-        );
-      },
-    );
+    // result.when(
+    //   success: (pagination) {
+    //     if (fetchMore && state is PaginationFetchingMore<T>) {
+    //       final pState = state as PaginationFetchingMore<T>;
+    //       state = pagination.copyWith(data: [
+    //         ...pState.data,
+    //         ...pagination.data
+    //       ]);
+    //     } else {
+    //       if (pagination.data.isEmpty && type == PaginationType.myPage) {
+    //         state = PaginationNothing(mapper: ErrorMapper());
+    //       } else {
+    //         state = pagination;
+    //       }
+    //     }
+    //   },
+    //   failure: (error) {
+    //     error.when(
+    //       notingStore: (message) {
+    //         state = PaginationNothing(mapper: ErrorMapper());
+    //       },
+    //       orElse: () {
+    //         state = PaginationError(mapper: ErrorMapper());
+    //       },
+    //     );
+    //   },
+    // );
     // final value = result.when(
     //   success: (pagination) {
     //     // 성공
@@ -105,33 +108,33 @@ class PaginationController<
     // }
     // );
 
-    if (state is PaginationFetchingMore) {
-      final pState = state as PaginationFetchingMore<T>;
-
-      if (value is Pagination<T>) {
-        state = value.copyWith(data: [
-          ...pState.data,
-          ...value.data
-        ]);
-      }
-    } else {
-      // 첫 페이지네이션 구현
-      if (value is Pagination<T>) {
-        // 빈 배열일 경우
-        if (value.data.isEmpty) {
-          if (type == PaginationType.myPage) {
-            state = PaginationNothing(
-              mapper: ErrorMapper()
-            );
-          }
-        }
-      }
-    }
+    // if (state is PaginationFetchingMore) {
+    //   final pState = state as PaginationFetchingMore<T>;
+    //
+    //   if (value is Pagination<T>) {
+    //     state = value.copyWith(data: [
+    //       ...pState.data,
+    //       ...value.data
+    //     ]);
+    //   }
+    // } else {
+    //   // 첫 페이지네이션 구현
+    //   if (value is Pagination<T>) {
+    //     // 빈 배열일 경우
+    //     if (value.data.isEmpty) {
+    //       if (type == PaginationType.myPage) {
+    //         state = PaginationNothing(
+    //           mapper: ErrorMapper()
+    //         );
+    //       }
+    //     }
+    //   }
+    // }
 
   }
 }
 
 extension on List {
-  bool get hasNextData => null;
+  bool get hasNextData => length >= 12;
 }
 
