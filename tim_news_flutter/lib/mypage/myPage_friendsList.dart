@@ -6,7 +6,7 @@ import 'package:tim_news_flutter/mypage/mypage_friendProfile.dart';
 import './mypage_class.dart';
 
 // todo: 친구 있을 때 테스트 다시 해봐야 함
-// check: 프로필 이미지 없으면 어떻게 나오는지
+
 class MypageFriendList extends ConsumerStatefulWidget {
   const MypageFriendList({super.key, this.userName, this.friendCount});
   final userName;

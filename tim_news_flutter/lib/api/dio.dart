@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +69,30 @@ class CustomInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri} ');
 
-    final errorModel = ExceptionModel.fromJson(err.response!.data);
+    // final errorModel = ExceptionModel.fromJson(err.response!.data);
+    ExceptionModel errorModel;
+    try {
+      if (err.response?.data is Map<String, dynamic>) {
+        // 이미 Map인 경우
+        errorModel = ExceptionModel.fromJson(err.response!.data);
+      } else if (err.response?.data is String) {
+        // 문자열인 경우, JSON으로 파싱 시도
+        try {
+          final Map<String, dynamic> jsonData = jsonDecode(err.response!.data);
+          errorModel = ExceptionModel.fromJson(jsonData);
+        } catch (e) {
+          // 파싱 실패시 기본 에러 모델 생성
+          errorModel = ExceptionModel.defaultError();
+        }
+      } else {
+        // 다른 타입이거나 null인 경우
+        errorModel = ExceptionModel.defaultError();
+      }
+    } catch (e) {
+      // 예외 발생 시 기본 에러 모델 사용
+      errorModel = ExceptionModel.defaultError();
+      return handler.reject(err);
+    }
     final UserModel? userInfo = await storage.readUserInfo();
 
     if (userInfo == null) {
@@ -99,7 +123,15 @@ class CustomInterceptor extends Interceptor {
           },
         ),
       );
-      final String accessToken = resp.data['body']['accessToken'];
+
+      // final String accessToken = resp.data['body']['accessToken'];
+      String accessToken;
+
+      if (resp.data['body'] != null) {
+        accessToken = resp.data['body']['accessToken'];
+      } else {
+        accessToken = resp.data['accessToken'];
+      }
       final options = err.requestOptions;
       // 토큰 변경하기
       options.headers.addAll({
