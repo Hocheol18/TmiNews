@@ -161,7 +161,6 @@ class MypageApiService {
         ),
       );
 
-      print(response.data);
       return response.data;
     });
   }

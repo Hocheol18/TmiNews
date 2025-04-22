@@ -1,9 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tim_news_flutter/api/api_news/news_get/news_detail.dart';
+import 'package:tim_news_flutter/news/models/news_detail_model.dart';
 
 // 뉴스 디테일 페이지: newsKey로 조회
-class NewsDetail extends StatelessWidget {
+// todo: 대댓글 처리, 좋아요 처리
+class NewsDetail extends ConsumerStatefulWidget {
   const NewsDetail({super.key, this.newsKey});
   final newsKey;
+
+  @override
+  ConsumerState<NewsDetail> createState() => _NewsDetailState();
+}
+
+class _NewsDetailState extends ConsumerState<NewsDetail> {
+  NewsDetailType ? newsInfo;
+  bool isLoading = true;
+  String? error;
+  String? writtenComment;
+  final TextEditingController commentController = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchNewsDetail();
+    });
+  }
+
+  @override
+  void dispose() {
+    // 컨트롤러 해제
+    commentController.dispose();
+    super.dispose();
+  }
+
+  // 뉴스 상세 정보 가져오기
+  Future<void> _fetchNewsDetail() async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(newDetailServiceProvider);
+      final result = await apiService.getNewsDetail(widget.newsKey);
+
+      if (result.isSuccess) {
+        final newsResult = NewsDetailType.fromJson(result.value);
+
+        setState(() {
+          newsInfo = newsResult;
+          isLoading = false;
+        });
+        print('기사 제목: ${newsInfo?.title}, 댓글: ${newsInfo?.comments}, 좋아요: ${newsInfo?.likes}');
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
+  // 댓글작성처리
+  void setWrittenComment(newComment) {
+    setState(() {
+      writtenComment = newComment;
+    });
+  }
+
+  // 댓글 작성 api
+  Future<void> createComment(parentId) async {
+    if (writtenComment == null || writtenComment == '') {
+      print('입력된 값 없음');
+      return; // 빈 입력일 경우 일찍 종료
+    }
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final apiService = ref.read(newDetailServiceProvider);
+      final result = await apiService.createComment(widget.newsKey, writtenComment, parentId);
+
+      if (result.isSuccess) {
+        print('댓글작성 완료!');
+
+        // 입력 필드와 상태 초기화
+        commentController.clear();
+        setState(() {
+          writtenComment = null;
+        });
+
+        // 데이터 새로고침
+        await _fetchNewsDetail();
+
+        // 로딩 상태 해제 (별도로 설정)
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +141,15 @@ class NewsDetail extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Article(),
-            Comments(),
+            Article(articleData: newsInfo),
+            Comments(
+                commentData: newsInfo?.comments,
+                likeCount: newsInfo?.likes,
+                setWrittenComment: setWrittenComment,
+                writtenComment:writtenComment,
+                createComment: createComment,
+                commentController: commentController,
+            ),
           ],
         ),
       ),
@@ -29,10 +157,9 @@ class NewsDetail extends StatelessWidget {
   }
 }
 
-
-
 class Article extends StatelessWidget {
-  const Article({super.key});
+  const Article({super.key, this.articleData});
+  final articleData;
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +169,19 @@ class Article extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '백지윤 정치성향 밝혀: 전 세계적으로 충격을 주고 있다',
+            articleData?.title ?? '제목 없음',
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, height: 1.3),
           ),
           SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('2025.03.01 박호철기자', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              Text('${articleData?.newsTime?.split('T')[0] ?? '날짜 없음'}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
             ],
           ),
           SizedBox(height: 20),
           Text(
-            '25세 백지윤씨가 자신의 정치적 성향을 전격 공개해 전 세계적으로 충격파를 일으키고 있다. 지난 주말 자신의 SNS 계정을 통해 밝힌 그의 정치적 입장은 정치권은 물론 일반 시민들 사이에서도 큰 화제가 되고 있다. 백씨가 밝힌 충격적인 정치 성향은 바로 "모든 정당을 동시에 지지한다"는 것. 그는 "보수당의 경제 정책, 진보당의 복지 정책, 녹색당의 환경 정책, 그리고 극우정당의 국방 정책까지 모두 지지한다"며 "왜 하나만 골라야 하나"도 도발적인 질문을 던졌다. 백씨가 밝힌 충격적인 정치 성향은 바로 "모든 정당을 동시에 지지한다"는 것. 그는 "보수당의 경제 정책, 진보당의 복지 정책, 녹색당의 환경 정책, 그리고 극우정당의 국방 정책까지 모두 지지한다"며 "왜 하나만 골라야 하나"도 도발적인 질문을 던졌다.',
+            articleData?.content ?? '내용 없음',
             style: TextStyle(fontSize: 16, height: 1.5),
           ),
         ],
@@ -64,7 +191,18 @@ class Article extends StatelessWidget {
 }
 
 class Comments extends StatelessWidget {
-  const Comments({super.key});
+  const Comments({
+    super.key,
+    this.commentData,
+    this.likeCount,
+    this.setWrittenComment,
+    this.writtenComment,
+    this.createComment,
+    this.commentController
+  });
+
+  final commentData, likeCount, setWrittenComment, writtenComment, createComment;
+  final TextEditingController? commentController;
 
   @override
   Widget build(BuildContext context) {
@@ -80,14 +218,16 @@ class Comments extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                    '댓글(2)',
+                    '댓글(${commentData?.length ?? 0})',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)
                 ),
                 Row(
                     children: [
-                      Text('좋아요 (3)'),
+                      Text('좋아요 (${likeCount ?? 0})'),
                       IconButton(
-                        onPressed: (){},
+                        onPressed: (){
+                          // todo: 좋아요 호출 함수
+                        },
                         icon: Icon(Icons.favorite_border, color: Colors.black)
                       ),
                     ]
@@ -99,8 +239,9 @@ class Comments extends StatelessWidget {
             children: [
               Expanded(
                 child: TextField(
+                  controller: commentController,
                   onChanged: (value) {
-                    // 여기서 값 받고
+                    setWrittenComment(value);
                   },
                   decoration: InputDecoration(
                     hintText: '댓글을 작성해봐요.',
@@ -115,7 +256,10 @@ class Comments extends StatelessWidget {
                   ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // 우선 대댓글 막아둠
+                  createComment(null);
+                },
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.black,
                   overlayColor: Color(0xffFFD43A).withValues(alpha: 0.5),
@@ -126,63 +270,65 @@ class Comments extends StatelessWidget {
             ],
           ),
           SizedBox(height: 15),
-          _buildCommentItem('AI수준 미쳤넹', '댓글달았어요'),
-          _buildCommentItem('다른 사용자', '댓글'),
+          ...(commentData?.map((comment) =>
+              _buildCommentItem(comment.user, comment.content)
+          ).toList() ?? [])
         ],
       ),
     );
   }
 
-  Widget _buildCommentItem(String username, String comment) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.green,
-                radius: 16,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text(comment),
-                  ],
-                ),
-              ),
-            ],
+  Widget _buildCommentItem(CommentUser user, String comment) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundImage:NetworkImage(user.profileImage),
+            radius: 16,
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, 7, 0, 7),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.green,
-                radius: 16,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text(comment),
-                  ],
-                ),
-              ),
-            ],
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.nickname, style: TextStyle(fontWeight: FontWeight.bold)),
+                SizedBox(height: 4),
+                Text(comment),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
+
+// // 대댓글
+// Widget _buildCommentChildItem(String username, String comment) {
+//   return
+//     Padding(
+//       padding: EdgeInsets.fromLTRB(20, 7, 0, 7),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           CircleAvatar(
+//             backgroundColor: Colors.green,
+//             radius: 16,
+//           ),
+//           SizedBox(width: 10),
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(username, style: TextStyle(fontWeight: FontWeight.bold)),
+//                 SizedBox(height: 4),
+//                 Text(comment),
+//               ],
+//             ),
+//           ),
+//         ],
+//       )
+//     );
+// }

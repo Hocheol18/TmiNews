@@ -6,7 +6,6 @@ import '../../api_login/error/result.dart';
 import '../../api_login/error/custom_exception.dart';
 import '../../api_login/error/run_catching_Exception.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tim_news_flutter/news/models/news_detail_model.dart';
 
 final newDetailServiceProvider = Provider<NewsDetailService>((ref) {
   final dio = ref.watch(dioProvider);
@@ -22,7 +21,7 @@ class NewsDetailService {
 
 
   // 뉴스 상세정보 조회
-  Future<Result<NewsDetail, CustomExceptions>> getNewsDetail(news_id) async {
+  Future<Result<Map<String, dynamic>, CustomExceptions>> getNewsDetail(news_id) async {
     return runCatchingExceptions(() async {
       final accessToken = await storage.readAccessToken();
 
@@ -33,8 +32,25 @@ class NewsDetailService {
         ),
       );
 
-      print(response.data);
       return response.data;
+    });
+  }
+
+  // 댓글 작성
+  Future<Result<void, CustomExceptions>> createComment(news_id, comment, parentId) async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+      final response = await dio.post(
+        'http://${dotenv.env['LOCAL_API_URL']}/news/${news_id}/reply',
+        options: Options(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
+        data: {
+          "content": comment,
+          "parentId": parentId
+        }
+      );
+      print(response);
     });
   }
 

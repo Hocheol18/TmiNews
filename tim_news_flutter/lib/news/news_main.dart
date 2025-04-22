@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tim_news_flutter/api/api_news/news_get/news_all.dart';
 import 'package:tim_news_flutter/common/topNavigator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tim_news_flutter/news/news_detail.dart';
 
 import '../common/loading_page.dart';
 
@@ -45,28 +46,36 @@ class NewsContent extends StatelessWidget {
           itemCount: newsList.length,
           itemBuilder: (context, index) {
             final item = newsList[index];
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors
-                    .primaries[Random().nextInt(Colors.primaries.length)]
-                    .withValues(alpha: 0.3),
-              ),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NewsDetail(newsKey: item['newsId'],)),
+                );
+              },
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                decoration: BoxDecoration(
+                  color: Colors
+                      .primaries[Random().nextInt(Colors.primaries.length)]
+                      .withValues(alpha: 0.3),
+                ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                        item['title'],
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      item['title'],
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
