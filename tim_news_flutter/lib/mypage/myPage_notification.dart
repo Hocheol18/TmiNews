@@ -79,7 +79,7 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '새로운 알림 n건',
+                  '새로운 알림 ${alarms?.length ?? 0}건',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 22
@@ -90,19 +90,21 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(20),
-                child: ListView.separated(
-                  itemCount: 2,
-                  itemBuilder: (c, i) {
-                    return Notification(type: 'follow');
-                  },
-                  separatorBuilder: (context, index) {
-                    return Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.grey[300],
-                    );
-                  },
-                ),
+                child:
+                  alarms?.length != 0
+                  ? ListView.separated(
+                      itemCount: 2,
+                      itemBuilder: (c, i) {
+                        return Notification(type: 'follow');
+                      },
+                      separatorBuilder: (context, index) {
+                        return Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey[300],
+                        );
+                      },
+                  ) : Text('알림이 없습니다'),
               ),
             )
           ],

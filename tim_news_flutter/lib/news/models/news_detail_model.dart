@@ -1,4 +1,4 @@
-class NewsDetail {
+class NewsDetailType {
   final String title;
   final String content;
   final String createdAt;
@@ -6,7 +6,7 @@ class NewsDetail {
   final List<Comment> comments;
   final int likes;
 
-  NewsDetail({
+  NewsDetailType({
     required this.title,
     required this.content,
     required this.createdAt,
@@ -15,15 +15,34 @@ class NewsDetail {
     required this.likes,
   });
 
-  factory NewsDetail.fromJson(Map<String, dynamic> json) {
-    return NewsDetail(
-      title: json['title'] ?? '',
-      content: json['content'] ?? '',
-      createdAt: json['createdAt'] ?? '',
-      newsTime: json['newsTime'] ?? '',
-      comments: (json['comments'] as List<dynamic>?)
-          ?.map((commentJson) => Comment.fromJson(commentJson))
-          .toList() ?? [],
+  factory NewsDetailType.fromJson(Map<String, dynamic> json) {
+    // newsData가 존재하는지 확인
+    print(json['data'].keys.toList());
+    final newsData = json['data']['newsData'];
+    print(newsData.keys.toList());
+    final commentsData = json['data']['comments'] as List<dynamic>? ?? [];
+    print(commentsData);
+
+    if (newsData == null) {
+      // newsData가 없는 경우 기본값 제공
+      return NewsDetailType(
+        title: '',
+        content: '',
+        createdAt: '',
+        newsTime: '',
+        comments: [],
+        likes: 0,
+      );
+    }
+
+    return NewsDetailType(
+      title: newsData['title'] ?? '',
+      content: newsData['content'] ?? '',
+      createdAt: newsData['createdAt'] ?? '',
+      newsTime: newsData['newsTime'] ?? '',
+      comments: commentsData
+          .map((commentJson) => Comment.fromJson(commentJson))
+          .toList(),
       likes: json['likes'] ?? 0,
     );
   }
@@ -35,7 +54,7 @@ class Comment {
   final String content;
   final String createdAt;
   final CommentUser user;
-  final List<Comment> children;  // 재귀적 구조: Comment 안에 Comment 리스트가 있음
+  final List<Comment> children;
 
   Comment({
     required this.replyId,
