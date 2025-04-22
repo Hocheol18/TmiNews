@@ -1,6 +1,5 @@
 package tmi.app.dto;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
@@ -8,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
-
-
 
 @Getter
 @Builder
@@ -19,6 +16,7 @@ public class NewsDetailDto {
     private NewsData newsData;
     private List<CommentResponseDTO> comments;
     private int likes;
+    private boolean liked;
 
     @Getter
     @Builder

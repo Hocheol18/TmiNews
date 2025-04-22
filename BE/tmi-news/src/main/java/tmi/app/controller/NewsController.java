@@ -116,20 +116,28 @@ public class NewsController {
   public ResponseEntity<?> getNewsDetail(
       @RequestHeader("Authorization") String bearerToken,
       @PathVariable Long newsId) {
-    // (1) JWT 파싱, 사용자 권한 체크 등 필요 시 처리
+
     String token = bearerToken.replace("Bearer ", "");
     Long userId = jwtProvider.extractUserId(token);
 
-    // (2) NewsService에서 뉴스 정보 조회
-    NewsDetailDto newsDetail = newsService.getNewsDetail(newsId, userId);
+    NewsDetailDto dto = newsService.getNewsDetail(newsId, userId);
 
-    // (3) 응답 생성
-    Map<String, Object> responseData = new HashMap<>();
-    responseData.put("status", 200);
-    responseData.put("message", "뉴스페이지 조회 성공");
-    responseData.put("data", newsDetail);
+    // 원하는 구조대로 직접 펼쳐서 Map 구성
+    Map<String, Object> data = new HashMap<>();
+    data.put("title", dto.getNewsData().getTitle());
+    data.put("content", dto.getNewsData().getContent());
+    data.put("createdAt", dto.getNewsData().getCreatedAt());
+    data.put("newsTime", dto.getNewsData().getNewsTime());
+    data.put("comments", dto.getComments());
+    data.put("likes", dto.getLikes());
+    data.put("liked", dto.isLiked());
 
-    return ResponseEntity.ok(responseData);
+    Map<String, Object> response = new HashMap<>();
+    response.put("status", 200);
+    response.put("message", "뉴스페이지 조회 성공");
+    response.put("data", data);
+
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/list")

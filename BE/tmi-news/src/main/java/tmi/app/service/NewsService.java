@@ -81,10 +81,14 @@ public class NewsService {
                 // 좋아요 수 세기
                 int likeCount = newsLikeRepository.countByNews(news);
 
+                boolean liked = newsLikeRepository.existsByNewsAndUser(news, userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("유저 없음")));
+
                 return NewsDetailDto.builder()
                                 .newsData(newsData)
                                 .comments(comments)
                                 .likes(likeCount)
+                                .liked(liked)
                                 .build();
         }
 
