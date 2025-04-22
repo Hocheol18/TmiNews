@@ -44,7 +44,7 @@ class MypageApiService {
       final accessToken = await storage.readAccessToken();
 
       final response = await dio.get(
-        'http://${dotenv.env['LOCAL_API_URL']}/notifications',
+        'http://${dotenv.env['LOCAL_API_URL']}/notifications/unread',
         options: Options(
           headers: {'Authorization': 'Bearer $accessToken'},
         ),
@@ -162,6 +162,46 @@ class MypageApiService {
       );
 
       return response.data;
+    });
+  }
+
+  // 친구 수락
+  Future<Result<void, CustomExceptions>> acceptFriend(userId) async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+      await dio.post(
+        'http://${dotenv.env['LOCAL_API_URL']}/friends/accept?requestId=${userId}',
+        options: Options(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
+      );
+    });
+  }
+
+  // 친구 거절
+  Future<Result<void, CustomExceptions>> rejectFriend(userId) async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+      await dio.post(
+        'http://${dotenv.env['LOCAL_API_URL']}/friends/reject?requestId=${userId}',
+        options: Options(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
+      );
+    });
+  }
+
+
+  // 알람 읽음 처리
+  Future<Result<void, CustomExceptions>> readAlarm(notificationId) async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+      await dio.post(
+        'http://${dotenv.env['LOCAL_API_URL']}/notifications/${notificationId}/read',
+        options: Options(
+          headers: {'Authorization': 'Bearer $accessToken'},
+        ),
+      );
     });
   }
 }

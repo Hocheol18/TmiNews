@@ -11,8 +11,6 @@ import './../api/api_login/provider/provider.dart';
 import 'package:tim_news_flutter/api/api_login/login/authRepository.dart';
 
 
-// todo: 새로운 알림 리스트 조회 후, 데이터가 있으면 뱃지 달아주기
-
 class MypageMain extends ConsumerStatefulWidget {
   const MypageMain({super.key});
 
@@ -25,6 +23,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
   bool isLoading = true;
   String? error;
   String sortType = 'recent';
+  bool isAlarm = false;
   
   @override
   void initState() {
@@ -32,6 +31,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchUserProfile();
+
     });
   }
 
@@ -44,15 +44,20 @@ class _MypageMainState extends ConsumerState<MypageMain> {
 
       final apiService = ref.read(mypageApiServiceProvider);
       final result = await apiService.getUserProfile(sortType);
-      await apiService.getAlarmList();
+      final alarmsResult = await apiService.getAlarmList();
 
       if (result.isSuccess) {
         final userInfo = UserInfo.fromJson(result.value);
-
         setState(() {
           userProfileData = userInfo;
           isLoading = false;
         });
+
+        if (alarmsResult.isSuccess){
+          setState(() {
+            isAlarm = alarmsResult.value.length != 0 ? true : false;
+          });
+        }
 
         print("프로필 데이터: "
             "${userInfo.user.nickname} "
@@ -130,7 +135,7 @@ class _MypageMainState extends ConsumerState<MypageMain> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications_outlined, color: Colors.black),
+            icon: Icon(isAlarm == true ? Icons.notifications_active_outlined : Icons.notifications_outlined, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
