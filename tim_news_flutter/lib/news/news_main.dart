@@ -8,6 +8,29 @@ import 'package:tim_news_flutter/news/news_detail.dart';
 
 import '../common/loading_page.dart';
 
+class NoDataFormat extends StatelessWidget {
+  const NoDataFormat({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.no_flash_outlined, size: 50,),
+            SizedBox(height: 10,),
+            Text(
+              '아직 기사가 없어요',
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 final dataHashProvider = StateProvider<Map<String, String>>((ref) => {});
 final newsCacheData = StateProvider<Map<String, dynamic>>((ref) => {});
 
@@ -50,7 +73,9 @@ class NewsContent extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NewsDetail(newsKey: item['newsId'],)),
+                  MaterialPageRoute(
+                    builder: (context) => NewsDetail(newsKey: item['newsId']),
+                  ),
                 );
               },
               child: Container(
@@ -131,8 +156,12 @@ class _NewsMainPageState extends ConsumerState<NewsMainPage> {
       ),
       body: newsValue.when(
         data: (newsData) {
-          final newsList = newsData.data['data'] ?? ['노데이터'];
-          return NewsContent(newsList: newsList);
+          final newsList = newsData.data['data'] as List<dynamic>;
+          if (newsList.isEmpty) {
+            return NoDataFormat();
+          } else {
+            return NewsContent(newsList: newsList);
+          }
         },
         loading: () => const LoadingPage(title: '뉴스를 받아오는 중입니다...'),
         error: (error, stack) => Center(child: Text("오류 발생, $error")),
