@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
 import './mypage_class.dart';
 
-// todo: 로딩중 보여주기, 친추 완료하면 팝업 띄우기
+// todo: 친추 완료하면 팝업 띄우기
+
 class MypageNewFriend extends ConsumerStatefulWidget {
   const MypageNewFriend({super.key});
 

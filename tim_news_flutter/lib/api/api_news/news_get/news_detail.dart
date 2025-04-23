@@ -54,4 +54,28 @@ class NewsDetailService {
     });
   }
 
+  // 좋아요처리
+  Future<Result<void, CustomExceptions>> toggleLike(news_id, liked) async {
+    return runCatchingExceptions(() async {
+      final accessToken = await storage.readAccessToken();
+      if (liked == true) {
+        await dio.delete(
+            'http://${dotenv.env['LOCAL_API_URL']}/news/${news_id}/likes',
+            options: Options(
+              headers: {'Authorization': 'Bearer $accessToken'},
+            ),
+            data: {}
+        );
+      } else {
+        await dio.post(
+            'http://${dotenv.env['LOCAL_API_URL']}/news/${news_id}/likes',
+            options: Options(
+              headers: {'Authorization': 'Bearer $accessToken'},
+            ),
+            data: {}
+        );
+      }
+    });
+  }
+
 }

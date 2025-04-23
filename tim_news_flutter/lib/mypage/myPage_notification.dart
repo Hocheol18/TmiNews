@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tim_news_flutter/api/mypage/mypageApi.dart';
 import 'package:tim_news_flutter/mypage/mypage_class.dart';
+import 'package:tim_news_flutter/news/news_detail.dart';
+import 'package:tim_news_flutter/mypage/mypage_friendProfile.dart';
 
-
-// todo
-// - [x] 알림 전체 리스트 조회
-// - [ ] 알림 읽음/안읽음 처리
-// - [ ] 친구 요청 처리
-// - [ ] 좋아요, 댓글 처리 -> 누르면 해당 뉴스로 갈 수 있도록
 
 class MyPageNotification extends ConsumerStatefulWidget {
   const MyPageNotification({super.key});
@@ -65,6 +62,103 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
     }
   }
 
+  friendRequestPopUp(userId, notificationId) async {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder:
+          (BuildContext context) => CupertinoAlertDialog(
+        content: const Text('친구 신청을 수락할까요?'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () async {
+              await handleFriendRequest(false, userId);
+              await setAlarmRead(notificationId);
+              Navigator.pop(context);
+            },
+            child: const Text('아니오'),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () async {
+              await handleFriendRequest(true, userId);
+              await setAlarmRead(notificationId);
+              Navigator.pop(context);
+            },
+            child: Text('예'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> handleFriendRequest(flag, userId) async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(mypageApiServiceProvider);
+      final result;
+      if (flag == true) {
+        result = await apiService.acceptFriend(userId);
+      } else {
+        result = await apiService.rejectFriend(userId);
+      }
+
+      // 결과 처리
+      if (result.isSuccess) {
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
+  Future<void> setAlarmRead(notificationId) async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final apiService = ref.read(mypageApiServiceProvider);
+      final result = await apiService.readAlarm(notificationId);
+
+      // 결과 처리
+      if (result.isSuccess) {
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -93,9 +187,13 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
                 child:
                   alarms?.length != 0
                   ? ListView.separated(
-                      itemCount: 2,
+                      itemCount: alarms?.length ?? 0,
                       itemBuilder: (c, i) {
-                        return Notification(type: 'follow');
+                        return Notification(
+                            alarm: alarms?[i],
+                            friendRequestPopUp: friendRequestPopUp,
+                            setAlarmRead: setAlarmRead
+                        );
                       },
                       separatorBuilder: (context, index) {
                         return Divider(
@@ -114,8 +212,8 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
 }
 
 class Notification extends StatefulWidget {
-  const Notification({super.key, this.type});
-  final type;
+  const Notification({super.key, this.alarm, this.friendRequestPopUp, this.setAlarmRead});
+  final alarm, friendRequestPopUp, setAlarmRead;
 
   @override
   State<Notification> createState() => _NotificationState();
@@ -123,40 +221,57 @@ class Notification extends StatefulWidget {
 
 class _NotificationState extends State<Notification> {
   final Map<String, IconData> notificationIcons = {
-    'like': Icons.favorite_border,
-    'comment': Icons.comment_outlined,
-    'follow': Icons.person_add_outlined,
-  };
-
-  final Map<String, String> notificationTexts = {
-    'like': '000님이 좋아요를 눌렀어요!',
-    'comment': '000님이 댓글을 남겼어요!',
-    'follow': '000님이 팔로우했어요!',
+    'LIKE': Icons.favorite_border,
+    'COMMENT': Icons.comment_outlined,
+    'FRIEND_REQUEST': Icons.person_add_outlined,
+    'FRIEND_ACCEPTED': Icons.person_pin_sharp,
   };
 
   @override
   Widget build(BuildContext context) {
-    final IconData? iconData = notificationIcons[widget.type];
-    final String text = notificationTexts[widget.type] ?? '알림이 도착했습니다';
+    final IconData? iconData = notificationIcons[widget.alarm?.type];
+    final String text = widget.alarm?.message ?? '알림이 도착했습니다';
 
-    return SizedBox(
-      height: 70,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(iconData, size: 35),
-            SizedBox(width: 20),
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(fontSize: 20),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+    return GestureDetector(
+      onTap: () async {
+        if (widget.alarm.type == 'LIKE' || widget.alarm.type ==  'COMMENT') {
+          await widget.setAlarmRead(widget.alarm.id);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                NewsDetail(newsKey: widget.alarm?.targetId)),
+          );
+        } else if (widget.alarm.type == 'FRIEND_REQUEST') {
+          // 친구 신청
+          widget.friendRequestPopUp(widget.alarm.targetId, widget.alarm.id);
+        } else {
+          await widget.setAlarmRead(widget.alarm.id);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                FriendProfile(friendId: widget.alarm?.targetId)),
+          );
+        }
+      },
+      child: SizedBox(
+        height: 80,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(iconData, size: 30),
+              SizedBox(width: 15),
+              Expanded(
+                child: Text(
+                  text,
+                  style: TextStyle(fontSize: 18),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

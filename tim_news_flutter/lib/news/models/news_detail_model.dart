@@ -5,6 +5,7 @@ class NewsDetailType {
   final String newsTime;
   final List<Comment> comments;
   final int likes;
+  final bool liked;
 
   NewsDetailType({
     required this.title,
@@ -13,37 +14,24 @@ class NewsDetailType {
     required this.newsTime,
     required this.comments,
     required this.likes,
+    required this.liked
   });
 
   factory NewsDetailType.fromJson(Map<String, dynamic> json) {
     // newsData가 존재하는지 확인
     print(json['data'].keys.toList());
-    final newsData = json['data']['newsData'];
-    print(newsData.keys.toList());
     final commentsData = json['data']['comments'] as List<dynamic>? ?? [];
-    print(commentsData);
-
-    if (newsData == null) {
-      // newsData가 없는 경우 기본값 제공
-      return NewsDetailType(
-        title: '',
-        content: '',
-        createdAt: '',
-        newsTime: '',
-        comments: [],
-        likes: 0,
-      );
-    }
 
     return NewsDetailType(
-      title: newsData['title'] ?? '',
-      content: newsData['content'] ?? '',
-      createdAt: newsData['createdAt'] ?? '',
-      newsTime: newsData['newsTime'] ?? '',
+      title: json['data']['title'] ?? '',
+      content: json['data']['content'] ?? '',
+      createdAt: json['data']['createdAt'] ?? '',
+      newsTime: json['data']['newsTime'] ?? '',
       comments: commentsData
           .map((commentJson) => Comment.fromJson(commentJson))
           .toList(),
-      likes: json['likes'] ?? 0,
+      likes: json['data']['likes'] ?? 0,
+      liked: json['data']['liked'] ?? false
     );
   }
 }

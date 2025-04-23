@@ -4,7 +4,8 @@ import 'package:tim_news_flutter/api/api_news/news_get/news_detail.dart';
 import 'package:tim_news_flutter/news/models/news_detail_model.dart';
 
 // 뉴스 디테일 페이지: newsKey로 조회
-// todo: 대댓글 처리, 좋아요 처리
+// todo: 좋아요 취소 처리..
+
 class NewsDetail extends ConsumerStatefulWidget {
   const NewsDetail({super.key, this.newsKey});
   final newsKey;
@@ -126,6 +127,40 @@ class _NewsDetailState extends ConsumerState<NewsDetail> {
     }
   }
 
+  // 좋아요 처리
+  Future<void> handleLike() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final apiService = ref.read(newDetailServiceProvider);
+      final result = await apiService.toggleLike(widget.newsKey, newsInfo?.liked ?? false);
+
+      if (result.isSuccess) {
+        // 데이터 새로고침
+        await _fetchNewsDetail();
+
+        // 로딩 상태 해제 (별도로 설정)
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          error = result.error.toString();
+          isLoading = false;
+        });
+        print("오류 발생: ${result.error}");
+      }
+    } catch (err) {
+      setState(() {
+        error = err.toString();
+        isLoading = false;
+      });
+      print('에러발생: ${err}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,10 +180,12 @@ class _NewsDetailState extends ConsumerState<NewsDetail> {
             Comments(
                 commentData: newsInfo?.comments,
                 likeCount: newsInfo?.likes,
+                liked: newsInfo?.liked,
                 setWrittenComment: setWrittenComment,
                 writtenComment:writtenComment,
                 createComment: createComment,
                 commentController: commentController,
+                handleLike: handleLike,
             ),
           ],
         ),
@@ -195,13 +232,15 @@ class Comments extends StatelessWidget {
     super.key,
     this.commentData,
     this.likeCount,
+    this.liked,
     this.setWrittenComment,
     this.writtenComment,
     this.createComment,
-    this.commentController
+    this.commentController,
+    this.handleLike
   });
 
-  final commentData, likeCount, setWrittenComment, writtenComment, createComment;
+  final commentData, likeCount, liked, setWrittenComment, writtenComment, createComment, handleLike;
   final TextEditingController? commentController;
 
   @override
@@ -227,8 +266,9 @@ class Comments extends StatelessWidget {
                       IconButton(
                         onPressed: (){
                           // todo: 좋아요 호출 함수
+                          handleLike();
                         },
-                        icon: Icon(Icons.favorite_border, color: Colors.black)
+                        icon: liked == true && liked != null ? Icon(Icons.favorite, color: Colors.black) : Icon(Icons.favorite_border, color: Colors.black)
                       ),
                     ]
                 )
