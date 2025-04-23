@@ -105,7 +105,9 @@
 
 ## **3. 사용 기술**
 
-<!-- Flutter -->
+### FRONTEND
+<div style="display : flex; gap: 10px; align-items: center;">
+
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white)
 
 <!-- Riverpod -->
@@ -113,8 +115,11 @@
 
 <!-- Dio -->
 ![Dio](https://img.shields.io/badge/Dio-0175C2?style=flat&logo=flutter&logoColor=white)
+</div>
 
-<!-- Python -->
+### AI
+<div style="display: flex; gap: 10px;">
+
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
 
 <!-- Flask -->
@@ -125,12 +130,12 @@
 
 <!-- LangChain -->
 ![LangChain](https://img.shields.io/badge/LangChain-FF9900?style=flat&logo=openai&logoColor=white)
+</div>
 
 
-<!-- GitHub -->
-![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)
+<div style="display: flex; gap: 10px;">
 
-<!-- Spring -->
+
 ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=flat&logo=spring&logoColor=white)
 
 <!-- Spring Boot -->
@@ -138,8 +143,12 @@
 
 <!-- MySQL -->
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+</div>
 
-<!-- Docker -->
+
+<div style="display:flex; gap : 10px;">
+
+
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 
 <!-- Postman -->
@@ -147,6 +156,11 @@
 
 <!-- Notion -->
 ![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white)
+
+
+<!-- GitHub -->
+![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)
+</div>
 
 
 ## **4. 문서**
