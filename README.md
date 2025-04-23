@@ -1,7 +1,7 @@
-# ** **1. 프로젝트 개요****
+# **1. 프로젝트 개요** 
 
 
-<div style="display: flex; gap: 30px; align-items: center; margin-bottom : 40px;">
+<div style="display: flex; gap: 50px; align-items: center; margin-bottom : 40px;">
   <img src="./docs/logo1.png" width="200" />
   <img src="./docs/logo2.png" width="200" />
   <img src="./docs/logo3.png" width="200" />
