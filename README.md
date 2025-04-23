@@ -1,4 +1,4 @@
-# **1. 프로젝트 개요** 
+## **1. 프로젝트 개요** 
 
 
 <div style="display: flex; gap: 50px; align-items: center; margin-bottom : 40px;">
@@ -16,7 +16,7 @@
 
 **TMI NEWS**는 사용자가 원하는 주제의 뉴스를 손쉽게 받아볼 수 있도록 돕는 AI 기반 뉴스 생성 및 큐레이션 서비스입니다. 사용자가 입력한 키워드를 바탕으로 AI가 기사 초안을 작성하고, 관리자는 이를 검토해 수정 및 승인할 수 있습니다. 또한 사용자 피드백을 기반으로 뉴스 콘텐츠를 개선하고, 개인화된 뉴스 큐레이션 경험을 제공합니다.
 
-## **1. 주요 기능**
+## **2. 주요 기능**
 
 ### 🧠 **AI 뉴스 생성**
 
@@ -103,7 +103,7 @@
 
 ---
 
-## **2. 사용 기술**
+## **3. 사용 기술**
 
 <!-- Flutter -->
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white)
@@ -149,7 +149,7 @@
 ![Notion](https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white)
 
 
-## **3. 문서**
+## **4. 문서**
 
 - [Figma (목업)](https://www.figma.com/design/b7wOUcVQ3qNW3CtGvSU0UG/Untitled?node-id=55-5&p=f&t=wTdJ3H2rx9C7oAsX-0)
 - [API 명세](http://notion.so/API-1af627ac5de580199718fd43c3f80556)
