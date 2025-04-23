@@ -144,6 +144,7 @@ class CustomInterceptor extends Interceptor {
 
       return handler.resolve(response);
     } on DioException catch (e) {
+      print(e);
       final errorModel = ExceptionModel.fromJson(e.response!.data);
       print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
       print('[ERR_NUMBER] ${errorModel.errorCode}');

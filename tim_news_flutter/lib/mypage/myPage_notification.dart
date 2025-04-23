@@ -73,7 +73,7 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
             isDefaultAction: true,
             onPressed: () async {
               await handleFriendRequest(false, userId);
-              await setAlarmRead(notificationId);
+              // await setAlarmRead(notificationId);
               Navigator.pop(context);
             },
             child: const Text('아니오'),
@@ -82,7 +82,7 @@ class _MyPageNotificationState extends ConsumerState<MyPageNotification> {
             isDestructiveAction: true,
             onPressed: () async {
               await handleFriendRequest(true, userId);
-              await setAlarmRead(notificationId);
+              // await setAlarmRead(notificationId);
               Navigator.pop(context);
             },
             child: Text('예'),
