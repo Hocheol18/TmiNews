@@ -64,7 +64,7 @@ class NewsDetailService {
             options: Options(
               headers: {'Authorization': 'Bearer $accessToken'},
             ),
-            data: {}
+            // data: {}
         );
       } else {
         await dio.post(
@@ -72,7 +72,7 @@ class NewsDetailService {
             options: Options(
               headers: {'Authorization': 'Bearer $accessToken'},
             ),
-            data: {}
+            // data: {}
         );
       }
     });

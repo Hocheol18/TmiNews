@@ -138,7 +138,7 @@ class MypageApiService {
   Future<Result<void, CustomExceptions>> addNewFriend(int userId) async {
     return runCatchingExceptions(() async {
       final accessToken = await storage.readAccessToken();
-      await dio.get(
+      await dio.post(
         'http://${dotenv
             .env['LOCAL_API_URL']}/friends/request?toUserId=${userId}',
         options: Options(
