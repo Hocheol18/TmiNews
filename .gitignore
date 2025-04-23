@@ -13,6 +13,7 @@ build/
 .env
 application.properties
 application.yml
+gradle.properties
 
 # Docker 등
 mysql_data/
