@@ -54,9 +54,6 @@
   <img src="./docs/news_no.png" width="200 "/>
 </div>
 <div style="display: flex; gap: 20px; align-items: center; margin-bottom : 20px; margin-top: 20px;">
-  <img src="./docs/news_picture.png" width="200" />
-</div>
-<div style="display: flex; gap: 20px; align-items: center; margin-bottom : 20px; margin-top: 20px;">
   <img src="./docs/news_detail4.png" width="200" />
   <img src="./docs/news_sports.png" width="200" />
   <img src="./docs/news_health.png" width="200" />
